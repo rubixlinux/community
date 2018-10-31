@@ -1,0 +1,34 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=verilog
+pkgver=0.8.2
+pkgrel=1
+pkgdesc="Icarus Verilog is a Verilog simulation and synthesis tool. It operates as a compiler, compiling source code writen in Verilog (IEEE-1364) into some target format. For batch simulation, the compiler can generate an intermediate form called vvp assembly. This intermediate form is executed by the ``vvp'' command. For synthesis, the compiler generates netlists in the desired format."
+url="http://www.icarus.com/eda/verilog"
+groups=('geda-suite')
+depends=('glibc' 'bzip2' 'zlib' 'gcc' 'readline' 'libtermcap' 'gperf')
+source=(ftp://ftp.icarus.com/pub/eda/verilog/v0.8/$pkgname-$pkgver.tar.gz)
+md5sums=('41650504e4460508a0800008a2628e07')
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make prefix=$startdir/pkg/usr install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		BUGS.txt	\
+		COPYING		\
+		INSTALL		\
+		QUICK_START.txt	\
+		README.txt	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

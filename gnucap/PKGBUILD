@@ -1,0 +1,34 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+VER=2005-06-10
+
+pkgname=gnucap
+pkgver=20050610
+pkgrel=1
+pkgdesc="gnucap is a general purpose circuit simulator. It performs nonlinear dc and transient analyses, fourier analysis, and ac analysis."
+url="http://geda.seul.org/tools/gnucap"
+groups=('geda-suite')
+depends=('glibc' 'gcc' 'readline' 'libtermcap')
+source=(http://geda.seul.org/dist/$pkgname-$VER.tar.gz)
+md5sums=('93d00f24c0032e4fafd3ab9c01d516f1')
+
+build() {
+
+	cd $startdir/src/$pkgname-$VER
+
+	./configure --prefix=/usr --enable-gtk2
+	make || return 1
+	mkdir -p $startdir/pkg/usr/bin
+	cp src/O/gnucap $startdir/pkg/usr/bin
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		doc/*		\
+		examples	\
+		man/html	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	find $startdir/pkg -perm 444 -exec chmod 644 {} \;
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

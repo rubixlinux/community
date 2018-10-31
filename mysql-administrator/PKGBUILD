@@ -1,0 +1,60 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=mysql-administrator
+pkgver=1.1.10
+pkgrel=2
+pkgdesc="mysql (SQL-based relational database server) MySQL is a fast, multi-threaded, multi-user, and robust SQL (Structured Query Language) database server.  It comes with a nice API which makes it easy to integrate into other applications. The home page for MySQL is http://www.mysql.com"
+backup=(etc/rc.d/mysql)
+depends=('libXext' 'glibc' 'libXi' 'libglade' 'gtk+2' 'atk' 'gtkmm' 'glibmm' 'fontconfig' 'libsigc++' 'expat' 'openssl' 'libXrender' 'zlib' 'libXau' 'freetype2' 'libXfixes' 'pango' 'cairo' 'libXcursor' 'libX11' 'libXdmcp' 'pcre' 'libxml2' 'mysql' 'glib2' 'gcc' 'libpng' 'libXrandr' 'libXinerama')
+url="http://www.mysql.org"
+source=(http://mysql.he.net/Downloads/MySQLAdministrationSuite/$pkgname-$pkgver.tar.gz	\
+	user_admin.diff									)
+md5sums=('b4eb3eb6e9c0af950d801189aa23c917' \
+	 '5d7cab2b5e5c677596ab5053ae89ba61' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: fixed user administration bug 2006.06.12
+##   rel1: Initial Rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	patch -p1 < $startdir/src/user_admin.diff || return 1
+
+	cd mysql-gui-common
+
+	./configure --prefix=/usr --enable-readline --enable-python-modules
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver/mysql-gui-common
+	cp	-a			\
+		COPYING			\
+		README			\
+		README.translating	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver/mysql-gui-common
+
+	cd ../mysql-administrator
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver/mysql-administrator
+	cp	-a		\
+		COPYING		\
+		ChangeLog	\
+		README.MacOSX	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver/mysql-administrator
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}
+

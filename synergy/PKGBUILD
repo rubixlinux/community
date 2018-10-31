@@ -1,0 +1,50 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=synergy
+pkgver=1.2.7
+pkgrel=1
+pkgdesc="Synergy lets you easily share a single mouse and keyboard between multiple computers with different operating systems, each with its own display, without special hardware. It's intended for users with multiple computers on their desk since each system uses its own monitor(s)."
+depends=('glibc' 'x11' 'gcc')
+backup=('etc/synergy.conf')
+url="http://synergy2.sourceforge.net"
+source=(http://dl.sourceforge.net/sourceforge/${pkgname}2/$pkgname-$pkgver.tar.gz)
+md5sums=('da9effc847d13f9725b6db043d8283a5')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 1.2.7 2005.12.20
+##   rel1: upgraded to 1.2.4 2005.09.19
+##   rel1: Initial Rubix Release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+        make prefix=$startdir/pkg/usr install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		doc/*.html	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	mkdir -p $startdir/pkg/etc
+	cp examples/synergy.conf $startdir/pkg/etc
+
+	find $startdir/pkg -perm 444 -exec chmod 644 {} \;
+
+}

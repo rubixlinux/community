@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SCRIPT=`basename $0`
+PROG=/usr/sbin/laptop_mode
+
+. /etc/rubixlib
+case "$1" in
+	start)
+		touch /var/run/laptop-mode-enabled
+		start_daemon $SCRIPT $PROG auto init
+		;;
+	stop)
+		rm -f /var/run/laptop-mode-enabled
+		stop_daemon $SCRIPT $PROG stop init
+		;;
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	status)
+		daemon_status $SCRIPT $PROG
+		;;
+	*)
+		stat_err "usage: $0 {start|stop|restart|status}"  
+esac

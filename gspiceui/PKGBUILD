@@ -1,0 +1,38 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gspiceui
+pkgver=v0.8.08
+pkgrel=1
+url="http://www.geda.seul.org/tools/gspiceui"
+pkgdesc="gspiceui is a compaction of GNU Spice GUI. It is intended to provide a GUI for two freely available electronic circuit simulation engines: GNU-Cap and Ng-Spice."
+groups=('geda-suite')
+depends=('sdl' 'glibc' 'libtiff' 'gtk+2' 'wxgtk' 'atk' 'fontconfig' 'x11' 'expat' 'zlib' 'freetype2' 'pango' 'libjpeg' 'cairo' 'glib2' 'gcc' 'libpng' 'ngspice' 'gnucap')
+source=(http://www.geda.seul.org/dist/$pkgname-$pkgver.tar.gz)
+md5sums=('91c61369912824d1e8f1c396aa678944')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	make || return 1
+
+	mkdir -p $startdir/pkg/usr/bin
+	cp bin/$pkgname $startdir/pkg/usr/bin
+
+	mkdir -p		$startdir/pkg/usr/doc/$pkgname-$pkgver/html
+	cp html/*.html		$startdir/pkg/usr/doc/$pkgname-$pkgver/html
+        cp html/*.jpeg		$startdir/pkg/usr/doc/$pkgname-$pkgver/html
+        cp html/gSpiceUI.css	$startdir/pkg/usr/doc/$pkgname-$pkgver/html
+
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

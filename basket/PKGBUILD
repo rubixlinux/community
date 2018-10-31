@@ -1,0 +1,46 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=basket
+pkgver=0.6.0Alpha2
+pkgrel=1
+pkgdesc="This application provides as many baskets as you wish, into which you can drag and drop, add or paste various objects (text, URLs, images, etc...). Objects can also be edited, copied, dragged, and so on. You can arrange them as you want! BasKet allow you to keep all objects in one place, keep data on hand, and take notes..."
+url="http://basket.kde.org"
+depends=('glibc' 'mesa3d' 'esound' 'fontconfig' 'expat' 'libXrender' 'zlib' 'alsa-lib' 'libXau' 'acl' 'libjpeg' 'libidn' 'libXdmcp' 'audiofile' 'libvorbis' 'libXmu' 'libmad' 'libmng' 'libXt' 'libXft' 'libXinerama' 'libpng' 'libXext' 'libSM' 'attr' 'libICE' 'libogg' 'libart_lgpl' 'qt' 'freetype2' 'libXfixes' 'libXcursor' 'libX11' 'arts' 'glib2' 'gcc' 'kdelibs' 'libXrandr')
+source=(http://basket.kde.org/downloads/$pkgname-$pkgver.tar.gz)
+md5sums=('671143e28ee2d1cbc0b76960810297ae')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 0.6.0Alpha2 2006.05.08
+##   rel1: Upgraded to 0.6.0Alpha1D 2006.02.27
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/opt/kde --disable-debug
+	echo "" > src/have_fam.h
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

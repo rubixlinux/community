@@ -1,0 +1,57 @@
+# Maintainer: Joshua Rubin <joshua@cybertron.cc>
+
+pkgname=kmymoney2
+pkgver=0.8.4
+pkgrel=1
+pkgdesc="KMyMoney - Personal Finance Software for KDE"
+url="http://kmymoney2.sourceforge.net"
+depends=('glibc' 'mesa3d' 'fontconfig' 'expat' 'libXrender' 'zlib' 'libXau' 'acl' 'libjpeg' 'libidn' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'libXft' 'libXinerama' 'libpng' 'libXext' 'libSM' 'attr' 'libICE' 'libart_lgpl' 'qt' 'freetype2' 'libXfixes' 'libXcursor' 'libX11' 'pcre' 'gcc' 'kdelibs' 'libXrandr')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('edac4fad63c3a9f90c054e105e48aa7a')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 0.8.4 2006.05.30
+##   rel3: rebuilt for acl 2006.05.08
+##   rel2: added small script so that kmymoney runs with umask 0002 2006.04.10
+##   rel1: upgraded to 0.8.3 2006.02.27
+##   rel1: upgraded to 0.8.2 2005.12.31
+##   rel1: upgraded to 0.8.1 2005.11.06
+##   rel1: initial rubix release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/opt/kde
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a			\
+		AUTHORS			\
+		COPYING			\
+		ChangeLog		\
+		ChangeLog.original	\
+		INSTALL			\
+		README			\
+		TODO			\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	mv $startdir/pkg/opt/kde/bin/kmymoney2 $startdir/pkg/opt/kde/bin/kmymoney2.main
+	echo '#!/bin/bash'				>> $startdir/pkg/opt/kde/bin/kmymoney2
+	echo 'umask 0002'				>> $startdir/pkg/opt/kde/bin/kmymoney2
+	echo 'exec /opt/kde/bin/kmymoney2.main "$@"'	>> $startdir/pkg/opt/kde/bin/kmymoney2
+	chmod 755 $startdir/pkg/opt/kde/bin/kmymoney2
+
+}

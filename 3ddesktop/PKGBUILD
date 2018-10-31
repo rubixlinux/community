@@ -1,0 +1,44 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=3ddesktop
+pkgver=0.2.8
+pkgrel=1
+pkgdesc="3d Desktop is an OpenGL program for switching virtual desktops in a seamless 3-dimensional manner."
+url="http://desk3d.sourceforge.net"
+depends=('glut' 'imlib2')
+source=(http://dl.sourceforge.net/sourceforge/desk3d/$pkgname-$pkgver.tar.gz)
+md5sums=('2691741a984c441e0a84aa6b4fac8513')
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#Initial Rubix Release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr --sysconfdir=/etc
+	make
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a			\
+		AUTHORS			\
+		COPYING			\
+		ChangeLog		\
+		INSTALL			\
+		MANIFEST		\
+		README			\
+		README.windowmanagers	\
+		TODO			\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

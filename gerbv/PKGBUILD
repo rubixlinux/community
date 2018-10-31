@@ -1,0 +1,35 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gerbv
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="gerbv is a viewer for Gerber files. Gerber files are generated from PCB CAD system and sent to PCB manufacturers as basis for the manufacturing process."
+url="http://gerbv.sourceforge.net"
+groups=('geda-suite')
+depends=('glibc' 'freetype2' 'gtk+2' 'cairo' 'pango' 'atk' 'x11' 'fontconfig' 'expat' 'glib2' 'zlib' 'libpng')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('e259ecec8b65b532a09b7c4ba31c8a08')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr --enable-gtk2
+	make || return 1
+	make prefix=$startdir/pkg/usr install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

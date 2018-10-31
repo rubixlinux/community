@@ -1,0 +1,107 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+ETPAN=0.42
+
+pkgname=sylpheed-claws
+pkgver=2.0.0
+pkgrel=2
+pkgdesc="sylpheed-claws is an e-mail client (and news reader), based on gtk+, aiming for quick response, graceful, and sophisticated interface, easy configuration, intuitive operation and abundant features"
+url="http://claws.sylpheed.org"
+depends=('glibc' 'aspell' 'db' 'gtk+2' 'atk' 'clamav' 'ncurses' 'x11' 'fontconfig'	\
+	 'openssl' 'expat' 'gpgme' 'zlib' 'readline' 'cyrus-sasl' 'pilot-link'		\
+	 'freetype2' 'pango' 'cairo' 'gmp' 'bzip2' 'glib2' 'libgpg-error'		\
+	 'startup-notification' 'openldap' 'gcc' 'libpng'				)
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz	\
+	http://dl.sourceforge.net/sourceforge/libetpan/libetpan-$ETPAN.tar.gz	)
+md5sums=('7ddfc626484ae0954a78c5233931e21a' \
+	 '269c275151bbb9c3e818b58863cca670' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: rebuilt against openldap 2.3 2006.03.10
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export MAKEFLAGS=""
+
+	build_etpan || return 1
+	build_claws || return 1
+
+	find $startdir/pkg -name *.la -exec rm {} \;
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}
+
+build_etpan() {
+
+	cd $startdir/src/libetpan-$ETPAN
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/libetpan-$ETPAN
+	cp	-a		\
+		COPYRIGHT	\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		TODO		\
+	$startdir/pkg/usr/doc/libetpan-$ETPAN
+
+}
+
+build_claws() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr --enable-crash-dialog
+	make || return 1
+
+	cd tools
+	make || return 1
+	cd ..
+
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		ABOUT-NLS	\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		ChangeLog.gtk1	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		RELEASE_NOTES	\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	cd tools
+	mkdir -p $startdir/pkg/usr/lib/$pkgname/tools
+	for tool in			\
+		*.pl			\
+		*.py			\
+		*.rc			\
+		*.sh			\
+		tb2sylpheed		\
+		update-po		\
+		uudec
+	do
+		cp $tool $startdir/pkg/usr/lib/$pkgname/tools
+	done
+	chmod 755 $startdir/pkg/usr/lib/$pkgname/tools/*
+	cp multiwebsearch.conf $startdir/pkg/usr/lib/$pkgname/tools
+	cd ..
+
+	mkdir -p $startdir/pkg/usr/share/pixmaps
+	cp $pkgname-128x128.png $startdir/pkg/usr/share/pixmaps/sylpheed-claws.png
+
+}

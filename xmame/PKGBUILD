@@ -1,0 +1,48 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=xmame
+pkgver=0.99
+pkgrel=1
+pkgdesc="MAME is an arcade machine emulator. Started in 1997 by Nicola Salmoria, MAME started out as a series of emulators for individual games. This series of emulators was combined into a simgle multi-game emulator. This is the current form of MAME; no longer a one-man show, there are over 100 contributors to the project."
+url="http://x.mame.net"
+depends=('glibc' 'sdl' 'audiofile' 'esound' 'x11' 'expat' 'lirc' 'gcc' 'zlib' 'alsa-lib')
+source=(http://x.mame.net/download/$pkgname-$pkgver.tar.bz2	\
+	makefile.diff.gz					)
+md5sums=('dec9cc95fb6fad7708f2d1c8e80166ae' \
+	 '0fde6ab8b04fcbe54e408573932ef1c8' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 0.99 2005.08.21
+##   rel1: initial rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	patch -p0 < $startdir/src/makefile.diff || return 1
+
+	make PREFIX=/usr || return 1
+	make PREFIX=$startdir/pkg/usr install
+
+	ln -s xmame.SDL $startdir/pkg/usr/bin/xmame
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		README		\
+		doc/		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.root $startdir/pkg
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	find $startdir/pkg -perm 444 -exec chmod 644 {} \;
+	find $startdir/pkg -perm 555 -exec chmod 755 {} \;
+	find $startdir/pkg -perm 600 -exec chmod 644 {} \;
+
+}

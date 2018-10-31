@@ -1,0 +1,176 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+VERSION=0.8.1
+KIPI=0.1.2
+KEXIF=0.2.2
+DOC=0.8.0
+KIPIPLUG=0.1.0-rc1
+
+pkgname=digikam
+pkgver=0.8.1
+pkgrel=1
+url="http://www.digikam.org"
+pkgdesc="digiKam is a simple digital photo management application for KDE, which makes importing and organizing digital photos a "snap". The photos can be organized in albums which can be sorted chronologically, by directory layout or by custom collections. An easy to use interface is provided that enables you to connect to your camera and preview, download and/or delete your images."
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$VERSION.tar.bz2		\
+	http://dl.sourceforge.net/sourceforge/$pkgname/libkipi-$KIPI.tar.bz2			\
+	http://dl.sourceforge.net/sourceforge/$pkgname/libkexif-$KEXIF.tar.bz2			\
+	http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-doc-$DOC.tar.bz2		\
+	http://dl.sourceforge.net/sourceforge/$pkgname/digikamimageplugins-doc-$DOC.tar.bz2	\
+	http://dl.sourceforge.net/sourceforge/$pkgname/kipi-plugins-$KIPIPLUG.tar.bz2		)
+md5sums=('2672c510a78256a034a666f0e237eb3f' \
+	 '2fc68328b1331039861fca6f9354d635' \
+	 '3adf724e84da04fa0ee6f92ac9516468' \
+	 'b958495f3830949bc9c2cd6fd1cd53e6' \
+	 '80fa6b3b3f24eda517b74f7d0a63f82b' \
+	 'e2c5abb08c4f9e82c4d475713b57301f' )
+depends=('glibc' 'libtiff' 'sqlite' 'gdbm' 'imlib2' 'fontconfig' 'expat' 'zlib' 'libart_lgpl'	\
+	 'freetype2' 'libjpeg' 'libidn' 'pcre' 'libmng' 'gphoto2' 'libexif' 'gcc' 'libtool'	\
+	 'kdelibs' 'libpng' 'x11' 'qt'								)
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe"
+
+	export QTDIR=/usr/lib/qt
+
+	makelibkipi		|| return 1
+	makelibkexif		|| return 1
+	makedigikam		|| return 1
+	makedocs		|| return 1
+	makeimageplugindoc	|| return 1
+	makekipiplugins		|| return 1
+
+}
+
+makelibkipi() {
+
+	cd $startdir/src/libkipi-$KIPI || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/libkipi-$KIPI
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/libkipi-$KIPI
+
+}
+
+makelibkexif() {
+
+	cd $startdir/src/libkexif-$KEXIF || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/libkexif-$KEXIF
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+	$startdir/pkg/usr/doc/libkexif-$KEXIF
+
+}
+
+makedigikam() {
+
+	cd $startdir/src/$pkgname-$VERSION || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$VERSION
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		HACKING		\
+		INSTALL		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$VERSION
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$VERSION/*
+
+}
+
+makedocs() {
+
+	cd $startdir/src/$pkgname-doc-$DOC || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+}
+
+
+makeimageplugindoc() {
+
+	cd $startdir/src/digikamimageplugins-doc-$DOC || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+}
+
+makekipiplugins() {
+
+	cd $startdir/src/kipi-plugins-$KIPIPLUG || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/kipi-plugins-$KIPIPLUG
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/kipi-plugins-$KIPIPLUG
+
+}

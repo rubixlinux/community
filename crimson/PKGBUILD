@@ -1,0 +1,33 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=crimson
+pkgver=0.4.8
+pkgrel=1
+pkgdesc="Crimson Fields is a tactical war game in the tradition of Battle Isle."
+depends=('glibc' 'sdl' 'x11' 'freetype2' 'libogg' 'gcc' 'zlib' 'libvorbis')
+source=(http://crimson.seul.org/files/$pkgname-$pkgver.tar.gz)
+md5sums=('56fb8f9af9c40bab482e95936946942e')
+url="http://crimson.seul.org"
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README*		\
+		THANKS		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

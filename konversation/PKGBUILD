@@ -1,0 +1,53 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=konversation
+pkgver=0.19
+pkgrel=2
+pkgdesc="Konversation is a graphical Internet Relay Chat client"
+url="http://konversation.kde.org"
+depends=('libSM' 'libXext' 'glibc' 'mesa3d' 'attr' 'fontconfig' 'expat' 'libICE' 'libXrender' 'zlib' 'libart_lgpl' 'libXau' 'qt' 'freetype2' 'acl' 'libXfixes' 'libjpeg' 'libXcursor' 'libidn' 'libX11' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'gcc' 'libXft' 'libXinerama' 'libXrandr' 'libpng' 'kdelibs')
+source=(http://download.berlios.de/$pkgname/$pkgname-$pkgver.tar.bz2	\
+	query.diff							)
+md5sums=('2194967b21276315a29258ccc557c429' \
+	 '6d57aab9e4f5423b42040448e0ea4e27' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: rebuilt for acl 2006.05.08
+##   rel1: initial rubix release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	patch -p1 < $startdir/src/query.diff || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--enable-final
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+		TODO		\
+		VERSION		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

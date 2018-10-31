@@ -1,0 +1,50 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=kmobiletools
+pkgver=0.4.3.1
+pkgrel=1
+pkgdesc="KMobileTools is a nice KDE application that allows you to control your mobile phone from your GNU/Linux PC."
+source=(http://download.berlios.de/kmobiletools/kmobiletools-0.4.3.1.tar.bz2)
+md5sums=('f0b3a35d0eb9dae2791c113ddd903f04')
+url="http://kmobiletools.berlios.de"
+depends=('glibc' 'fontconfig' 'x11' 'expat' 'zlib' 'libart_lgpl' 'qt' 'freetype2' 'libjpeg' 'libidn' 'pcre' 'libmng' 'gcc' 'kdelibs' 'libpng')
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INDEX		\
+		INSTALL		\
+		README		\
+		TODO		\
+		VERSION		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

@@ -1,0 +1,26 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+RUBYSHORT=1.8
+
+pkgname=rails
+pkgver=1.1.2
+pkgrel=1
+pkgdesc="rails -- web-application framework with template engine, control-flow layer, and orm"
+url="http://www.rubyonrails.org"
+depends=('ruby' 'rake' 'activesupport' 'activerecord' 'actionpack' 'actionmailer' 'actionwebservice')
+source=(http://rubyforge.org/frs/download.php/9684/$pkgname-$pkgver.gem)
+md5sums=('a90166212c33392f6aae98bd4be2e184')
+
+build() {
+
+	cd $startdir/src
+
+	mkdir -p $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT
+	gem install $pkgname-$pkgver -l -i $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT || return 1
+
+	mv $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT/bin $startdir/pkg/usr
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}
+

@@ -1,0 +1,35 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+VERSION=5.0-rc6
+
+pkgname=mod_auth_kerb
+pkgver=5.0rc6
+pkgrel=1
+pkgdesc="mod_auth_kerb is an apache module designed to provide kerberos authentication to the apache web server."
+url="http://modauthkerb.sourceforge.net"
+depends=('glibc' 'e2fsprogs' 'db' 'openssl' 'heimdal' 'apache')
+source=(http://dl.sourceforge.net/sourceforge/modauthkerb/$pkgname-$VERSION.tar.gz)
+md5sums=('274edfb950af20ce6ef0ddcb7c20263a')
+
+build() {
+
+	cd $startdir/src/$pkgname-$VERSION
+
+	./configure			\
+		--prefix=/usr		\
+		--with-krb4=no		\
+		--with-krb5=/usr	\
+		--with-apache=/usr
+	make || return 1
+
+	mkdir -p $startdir/pkg/usr/libexec/apache
+	cp src/$pkgname.so $startdir/pkg/usr/libexec/apache
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$VERSION
+	cp	-a	\
+		INSTALL	\
+		LICENSE	\
+		README	\
+	$startdir/pkg/usr/doc/$pkgname-$VERSION
+
+}

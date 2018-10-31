@@ -1,0 +1,45 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=yakuake
+pkgver=2.7.3
+pkgrel=1
+pkgdesc="yakuake - yet another kuake kde terminal emulator"
+url="http://yakuake.uv.ro"
+depends=('qt' 'libXext' 'libX11' 'libSM' 'libICE' 'libXrender' 'mesa3d' 'libXmu' 'libXrandr' 'libXcursor' 'libXinerama' 'libXft' 'libXau' 'libXdmcp' 'libXt' 'libXfixes' 'glibc' 'freetype2' 'libjpeg' 'libidn' 'fontconfig' 'expat' 'libmng' 'zlib' 'gcc' 'kdelibs' 'libart_lgpl' 'libpng')
+source=(http://download.softpedia.com/linux/$pkgname-$pkgver.tar.bz2)
+md5sums=('98576f75c94f75756ef4acb18ef93a5e')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/opt/kde --disable-debug
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

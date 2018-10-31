@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Glurp
+Comment=A GTK2 based frontend for the mpd daemon
+Exec=glurp
+Terminal=false
+Type=Application
+Icon=
+Categories=GNOME;KDE;GTK;Application;Multimedia;AudioVideo;Video;Player;
+StartupNotify=true

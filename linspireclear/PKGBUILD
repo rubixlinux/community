@@ -1,0 +1,45 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=linspireclear
+pkgver=1.11
+pkgrel=1
+pkgdesc="\"Linspire Clear\" is a KDE style for KDE 3.2, based on the KDE style Plastik."
+depends=('glibc' 'fontconfig' 'x11' 'expat' 'kdebase' 'zlib' 'libart_lgpl' 'qt' 'freetype2' 'libjpeg' 'libidn' 'libmng' 'gcc' 'kdelibs' 'libpng')
+source=(http://software.linspire.com/pool-src/los/los-linspireclear-style/los-linspireclear-style_1.11-0.0.0.50.linspire0.1.tar.gz	\
+	cvs.sh.diff.gz															)
+md5sums=('1e2cc6f0febf17b294d8306ccce8db51' \
+	 '7b1a1fc7f2908357d57d0e463713417e' )
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/marlin_build_los-linspireclear-style-1
+
+	patch -p1 < $startdir/src/cvs.sh.diff
+
+	make -f Makefile.cvs
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING*	\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

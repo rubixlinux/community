@@ -1,0 +1,44 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=flac123
+pkgver=0.0.9
+pkgrel=1
+pkgdesc="flac123 is a command-line program for playing flac-encoded files"
+url="http://flac-tools.sourceforge.net"
+depends=('glibc' 'flac' 'libao' 'popt')
+source=(http://dl.sourceforge.net/sourceforge/flac-tools/$pkgname-$pkgver.tar.gz)
+md5sums=('1614e1d1fe5b427ffd5988ea766abcf4')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		BUGS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		README.remote	\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

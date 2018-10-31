@@ -1,0 +1,36 @@
+--- entrance/data/config/build_config.sh.in.orig	2006-01-24 21:33:06.000000000 -0700
++++ entrance/data/config/build_config.sh.in	2006-01-24 21:35:12.000000000 -0700
+@@ -19,7 +19,7 @@
+ #ecore_config -c $DB -k /entrance/fonts/1/-s -s "/usr/X11R6/lib/X11/fonts/Truetype/"
+ ecore_config -c $DB -k /entrance/greeting/before -s "Welcome to"
+ ecore_config -c $DB -k /entrance/greeting/after -s ""
+-ecore_config -c $DB -k /entrance/session/count -i 7
++ecore_config -c $DB -k /entrance/session/count -i 5
+ ecore_config -c $DB -k /entrance/session/0/session -s "default"
+ ecore_config -c $DB -k /entrance/session/0/title -s "Default"
+ ecore_config -c $DB -k /entrance/session/0/icon -s "default.png"
+@@ -29,18 +29,12 @@
+ ecore_config -c $DB -k /entrance/session/2/session -s "kde"
+ ecore_config -c $DB -k /entrance/session/2/title -s "KDE"
+ ecore_config -c $DB -k /entrance/session/2/icon -s "kde.png"
+-ecore_config -c $DB -k /entrance/session/3/session -s "gnome"
+-ecore_config -c $DB -k /entrance/session/3/title -s "Gnome"
+-ecore_config -c $DB -k /entrance/session/3/icon -s "gnome.png"
+-ecore_config -c $DB -k /entrance/session/4/session -s "Enlightenment"
+-ecore_config -c $DB -k /entrance/session/4/title -s "E16"
+-ecore_config -c $DB -k /entrance/session/4/icon -s "enlightenment.png"
+-ecore_config -c $DB -k /entrance/session/5/session -s "xfce"
+-ecore_config -c $DB -k /entrance/session/5/title -s "XFce"
+-ecore_config -c $DB -k /entrance/session/5/icon -s "xfce.png"
+-ecore_config -c $DB -k /entrance/session/6/session -s "failsafe"
+-ecore_config -c $DB -k /entrance/session/6/title -s "Failsafe"
+-ecore_config -c $DB -k /entrance/session/6/icon -s "failsafe.png"
++ecore_config -c $DB -k /entrance/session/3/session -s "xfce"
++ecore_config -c $DB -k /entrance/session/3/title -s "XFce"
++ecore_config -c $DB -k /entrance/session/3/icon -s "xfce.png"
++ecore_config -c $DB -k /entrance/session/4/session -s "failsafe"
++ecore_config -c $DB -k /entrance/session/4/title -s "Failsafe"
++ecore_config -c $DB -k /entrance/session/4/icon -s "failsafe.png"
+ ecore_config -c $DB -k /entrance/system/reboot -i 1
+ ecore_config -c $DB -k /entrance/system/halt -i 1
+ ecore_config -c $DB -k /entrance/user/remember -i 1

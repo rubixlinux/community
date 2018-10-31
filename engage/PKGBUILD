@@ -1,0 +1,55 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=engage
+pkgver=20060124
+pkgrel=1
+pkgdesc="engage enlightenment e17 dockbar and module"
+depends=('glibc' 'edje' 'emotion' 'ewl' 'imlib2' 'evas' 'x11' 'openssl' 'embryo' 'zlib' 'esmart' 'e' 'ecore' 'freetype2' 'eet' 'libjpeg')
+groups=('e17')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to latest cvs 2006.01.24
+##   rel1: upgraded to latest cvs 2005.10.06
+##   rel1: upgraded to latest cvs 2005.08.26
+##   rel1: Initial Rubix Release 2005.04.30
+
+build() {
+
+	cd $startdir/src
+
+	cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment login
+	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment co misc/$pkgname
+
+	cd misc/$pkgname
+
+	./autogen.sh
+	./configure			\
+		--prefix=/usr		\
+		--sysconfdir=/etc/X11	\
+		--enable-static=no	\
+		--enable-xinerama
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		COPYING-PLAIN	\
+		ChangeLog	\
+		FAQ		\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

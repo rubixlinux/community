@@ -1,0 +1,11 @@
+--- konversation-0.19/konversation/src/server.cpp.orig	2006-02-01 23:41:28.000000000 -0700
++++ konversation-0.19/konversation/src/server.cpp	2006-02-01 23:41:40.000000000 -0700
+@@ -2632,7 +2632,7 @@
+         channel=nextchannel;
+     }
+ 
+-    Query* query=getQueryByName(nickname);
++    class Query* query=getQueryByName(nickname);
+     if(query)
+     {
+       query->quitNick(reason);

@@ -1,0 +1,57 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=laptop-mode-tools
+pkgver=1.11
+pkgrel=1
+pkgdesc="Laptop mode (also known as laptopmode, laptop-mode and laptop_mode, for search engine purposes :) ) is a kernel "mode" that allows you to extend the battery life of your laptop. It does this by intelligently grouping write activity on your disks, so that only reads of uncached data result in a disk spinup. It causes a significant improvement in battery life (for usage patterns that allow it)."
+url="http://www.xs4all.nl/~bsamwel/laptop_mode"
+backup=('etc/laptop-mode/laptop-mode.conf')
+depends=('kernel26' 'acpid')
+source=(http://www.xs4all.nl/~bsamwel/laptop_mode/tools/downloads/laptop-mode-tools_${pkgver}.tar.gz	\
+	laptop-mode											)
+md5sums=('f5c882e2ba1953b80abd1d7cd38c3a51' \
+	 '5ab2cd36f47971f9b8215d6d7e450f5f' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 1.11, updated rc script to new format 2006.01.17
+##   rel1: initial rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	mkdir -p				$startdir/pkg/etc/laptop-mode
+	cp etc/laptop-mode/laptop-mode.conf	$startdir/pkg/etc/laptop-mode
+
+	mkdir -p				$startdir/pkg/usr/sbin
+	cp usr/sbin/laptop_mode			$startdir/pkg/usr/sbin
+	cp usr/sbin/lm-syslog-setup		$startdir/pkg/usr/sbin
+
+	mkdir -p				$startdir/pkg/etc/acpi/actions
+	cp etc/acpi/actions/*			$startdir/pkg/etc/acpi/actions
+
+	mkdir -p				$startdir/pkg/etc/acpi/events
+	cp etc/acpi/events/*			$startdir/pkg/etc/acpi/events
+
+	mkdir -p				$startdir/pkg/etc/rc.d
+	cp $startdir/src/laptop-mode		$startdir/pkg/etc/rc.d
+
+	mkdir -p				$startdir/pkg/usr/man/man8
+	cp man/*				$startdir/pkg/usr/man/man8
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		COPYING		\
+		Documentation/*	\
+		README		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/sbin
+
+}

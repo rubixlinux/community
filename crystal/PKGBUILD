@@ -1,0 +1,45 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=crystal
+pkgver=1.0.0
+url="http://www.kde-look.org/content/show.php?content=13969"
+pkgrel=1
+pkgdesc="Crystal is a kwin window decoration theme, which offers you (pseudo) TRANSPARENT titlebar, buttons and borders."
+depends=('libSM' 'libXext' 'glibc' 'mesa3d' 'attr' 'fontconfig' 'expat' 'libICE' 'kdebase' 'libXrender' 'zlib' 'libart_lgpl' 'libXau' 'qt' 'freetype2' 'acl' 'libXfixes' 'libjpeg' 'libXcursor' 'libidn' 'libX11' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'gcc' 'libXft' 'libXinerama' 'libXrandr' 'libpng' 'kdelibs')
+source=(http://www.kde-look.org/content/files/13969-$pkgname-$pkgver.tar.bz2)
+md5sums=('cbd2aaacf413ff45c2bdfb345f70973b')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -Os -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -Os -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--enable-final
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a	\
+		AUTHORS	\
+		COPYING	\
+		INSTALL	\
+		README	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

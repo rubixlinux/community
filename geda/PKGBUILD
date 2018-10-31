@@ -1,0 +1,61 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=geda
+pkgver=20050820
+pkgrel=1
+pkgdesc="The gEDA project is working on producing a full GPL'd suite of Electronic Design Automation tools. These tools are used for electrical circuit design, schematic capture, simulation, prototyping, and production. Currently, the gEDA project offers a mature suite of free software applications for electronics design, including schematic capture, attribute management, bill of materials (BOM) generation, netlisting into over 20 netlist formats, analog and digital simulation, and printed circuit board (PCB) layout."
+url="http://geda.seul.org"
+groups=('geda-suite')
+depends=('glibc' 'freetype2' 'gtk+2' 'cairo' 'pango' 'atk' 'x11' 'fontconfig' 'guile' 'expat' 'glib2' 'zlib' 'libpng')
+source=(ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/README				\
+	http://geda.seul.org/devel/$pkgver/gaf-$pkgver-relnotes.html			\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/Makefile				\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/libgeda-$pkgver.tar.gz		\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-symbols-$pkgver.tar.gz	\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-gschem-$pkgver.tar.gz	\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-gnetlist-$pkgver.tar.gz	\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-gsymcheck-$pkgver.tar.gz	\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-gattrib-$pkgver.tar.gz	\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-$pkgver.tar.gz		\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-utils-$pkgver.tar.gz	\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-docs-$pkgver.tar.gz		\
+	ftp://ftp.geda.seul.org/pub/geda/devel/$pkgver/geda-examples-$pkgver.tar.gz	\
+	make.diff									)
+md5sums=('b5f3a65815f13ad004951a601c77061b' \
+	 '294c8bd1fa69fa5a198417d6093a7190' \
+	 '86f6612a1c1ff502bebddce24c40bcb0' \
+	 '356182f379af726045a70de3024c7e6d' \
+	 'a05c9bb11a31c246be3c9a799685bb0e' \
+	 '8ac2387999ec98016c3b004c95fab424' \
+	 '94f2a666701e06438fda0a9ce00e5ae3' \
+	 'c339abc4956987852b948c44118b2e2f' \
+	 '6ff8e6343b621199dde7fcd9a7ff264a' \
+	 'e8d903d84515cc518e545b6f2e3d7a9d' \
+	 '6555466492f3273dbefb772bd4ffd486' \
+	 '089d0f680cf4f1279a73d895f3e08ffd' \
+	 '8588c76319bd03514a52a48db95ac4df' \
+	 '4807d1265a2b398ab6cecb0e4b10daa2' )
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src
+	patch -p0 < $startdir/src/make.diff	|| return 1
+	make install				|| return 1
+	make DESTDIR=$startdir/pkg install	|| return 1
+
+	mkdir -p $startdir/pkg/usr/doc
+	mv $startdir/pkg/usr/share/doc/geda-doc $startdir/pkg/usr/doc/$pkgname-$pkgver
+	rmdir $startdir/pkg/usr/share/doc
+	cp	-a				\
+		README				\
+		gaf-$pkgver-relnotes.html	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	rm $startdir/pkg/usr/info/dir
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	rm -r $startdir/pkg/usr/share/gEDA/sym/gnetman
+
+}

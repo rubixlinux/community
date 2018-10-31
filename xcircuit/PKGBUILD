@@ -1,0 +1,44 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=xcircuit
+pkgver=3.4.10
+pkgrel=1
+pkgdesc="xcircuit is a program for drawing publishable-quality electrical circuit schematic diagrams and related figures, and produce circuit netlists through schematic capture."
+url="http://opencircuitdesign.com/xcircuit"
+depends=('glibc' 'x11' 'tcl' 'zlib' 'tk')
+source=(http://opencircuitdesign.com/$pkgname/archive/$pkgname-$pkgver.tgz)
+md5sums=('ec2d2d771b5ffaf996ae00b8da1e62b4')
+
+## Todo:
+##   None
+
+## Notes:
+##   builds with pie, but crashes
+
+## Changelog:
+##   rel1: initial rubix release 2005.11.29
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		CHANGES		\
+		COPYRIGHT	\
+		README*		\
+		TODO		\
+		VERSION		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

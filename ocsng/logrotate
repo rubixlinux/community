@@ -1,0 +1,6 @@
+/var/log/ocsinventory-client/*.log{
+	weekly
+	rotate 7
+	compress
+	notifempty
+}

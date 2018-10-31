@@ -1,0 +1,57 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=kiax
+pkgver=0.8.5
+pkgrel=1
+pkgdesc="Kiax is an IAX client application (a so called Softphone) which allows PC users to make ordinary VoIP calls to Asterisk servers, the same way as they do it with their hardware telephone. It aims to provide a simple and user-friendly graphical interface and desktop integration for calling, contact list, call register management and easy configuration. That is - a simple to use IAX Client."
+url="http://kiax.sourceforge.net"
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver-src.tar.gz	\
+	repath.diff									\
+	src.pro.diff									)
+md5sums=('6bc7a9a94be7a3e998113311ce4e5847' \
+	 '57f6d359a5343ecb590be8e1a1948b51' \
+	 '6f704b2b4edcc539ad3ff733a385cd6b' )
+depends=('libSM' 'glibc' 'libXext' 'mesa3d' 'fontconfig' 'expat' 'libICE' 'libXrender' 'zlib' 'libXau' 'qt' 'freetype2' 'libXfixes' 'libjpeg' 'libXcursor' 'libX11' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'gcc' 'libpng' 'libXrandr' 'libXinerama' 'libXft')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 0.8.5 2006.04.23
+##   rel1: initial Rubix release 2005.08.10
+
+build() {
+
+	export MAKEFLAGS=""
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver-src
+
+	patch -p1 < $startdir/src/repath.diff || return 1
+
+	./repath.pl --prefix=/opt/kde --targetos=rubix
+	qmake -o Makefile qkiax.pro
+	sed -i -e "s:\(\$(DEST_PATH)\):\${INSTALL_ROOT}\1:" bin/Makefile
+
+	patch -p1 < $startdir/src/src.pro.diff || return 1
+
+	mkdir -p $startdir/pkg/opt/kde/bin
+	make || return 1
+	make INSTALL_ROOT=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		CHANGELOG	\
+		COPYING		\
+		INSTALL*	\
+		README*		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

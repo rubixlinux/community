@@ -1,0 +1,47 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gammu
+pkgver=1.04.0
+pkgrel=1
+pkgdesc="gammu is a collection of applications, scripts and drivers used for managing all possible functions in cellular phones and similiar devices."
+depends=('glibc' 'mysql' 'openssl' 'bluez-libs' 'zlib')
+source=(http://www.mwiacek.com/zips/gsm/$pkgname/stable/1_0x/$pkgname-$pkgver.tar.gz)
+url="http://www.gammu.net"
+md5sums=('6c9b4428961eedc983e2925e364321d3')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 1.06.0, rebuilt against mysql 5.0 2006.03.06
+##   rel1: initial rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure					\
+		--prefix=/usr				\
+		--enable-7110incoming			\
+		--with-docdir=/usr/doc/$pkgname-$pkgver	\
+		$CHOST
+	make shared || return 1
+	make DESTDIR=$startdir/pkg installshared
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		changelog	\
+		copying		\
+		readme.txt	\
+		version		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	mkdir -p $startdir/pkg/etc
+	cp $startdir/pkg/usr/doc/$pkgname-$pkgver/examples/config/gammurc $startdir/pkg/etc
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

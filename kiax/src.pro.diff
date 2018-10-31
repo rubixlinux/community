@@ -1,0 +1,13 @@
+--- kiax-0.8.5-src/src/src.pro.orig	2006-04-23 13:53:17.000000000 -0600
++++ kiax-0.8.5-src/src/src.pro	2006-04-23 13:53:38.000000000 -0600
+@@ -90,8 +90,8 @@
+ LIBS += ../lib/libiaxclient.a ${LIBOSSAUDIO}
+ INCLUDEPATH = ../src \
+ ../lib
+-DEFINES = ICONS_PATH=\"/usr/local/share/kiax/icons/\" \
+-I18N_DIRECTORY=\"/usr/local/share/kiax/i18n/\"
++DEFINES = ICONS_PATH=\"/opt/kde/share/kiax/icons/\" \
++I18N_DIRECTORY=\"/opt/kde/share/kiax/i18n/\"
+ TARGET = ../bin/kiax
+ CONFIG += release \
+ warn_on \

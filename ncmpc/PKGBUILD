@@ -1,0 +1,43 @@
+# Maintainer: Jordan Neumeyer <jnengland77@gmail.com>
+
+pkgname=ncmpc
+pkgver=0.11.1
+pkgrel=2
+pkgdesc="ncmpc - an ncurses interface for mpd"
+url="http://musicpd.org"
+depends=('glibc' 'glib2' 'ncurses' 'mpd')
+source=(http://mercury.chem.pitt.edu/~shank/$pkgname-$pkgver.tar.gz)
+md5sums=('c90668b12f3676c73913a863482ec405')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##     rel1: Initial Release to the /community
+
+
+build() {
+
+ 	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	mv $startdir/pkg/usr/share/doc $startdir/pkg/usr
+	mv $startdir/pkg/usr/doc/$pkgname $startdir/pkg/usr/doc/$pkgname-$pkgver
+	rmdir $startdir/pkg/usr/share/$pkgname
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		README		\
+		TODO		\
+		ChangeLog	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

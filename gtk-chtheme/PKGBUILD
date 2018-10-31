@@ -1,0 +1,39 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gtk-chtheme
+pkgver=0.3.1
+pkgrel=2
+pkgdesc="gtk-chtheme is a little program lets you change your gtk+ 2.0 theme"
+url="http://plasmasturm.org/code/gtk-chtheme"
+depends=('glibc' 'freetype2' 'gtk+2' 'cairo' 'pango' 'atk' 'x11' 'fontconfig' 'expat' 'glib2' 'zlib' 'libpng')
+source=(http://plasmasturm.org/code/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('f688053bf26dd6c4f1cd0bf2ee33de2a')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: fixed manpage location 2006.01.13
+##   rel1: initial rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	make || return 1
+	make DESTDIR=$startdir/pkg MANDIR=/usr/man install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		COPYING		\
+		ChangeLog	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+	chmod 644 $startdir/pkg/usr/man/man1/$pkgname.1
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

@@ -1,0 +1,35 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gtkwave
+pkgver=1.3.85
+pkgrel=1
+pkgdesc="GTKWave is a fully featured GTK+ based wave viewer for Unix and Win32 which reads LXT, LXT2, VZT, and GHW files as well as standard Verilog VCD/EVCD files and allows their viewing."
+url="http://home.nc.rr.com/gtkwave"
+groups=('geda-suite')
+depends=('glibc' 'freetype2' 'gtk+2' 'cairo' 'pango' 'atk' 'x11' 'fontconfig' 'expat' 'glib2' 'zlib' 'libpng')
+source=($pkgname-$pkgver.tar.bz2)
+md5sums=('87a94620442b1e462da1f6343b844f7d')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure2 --prefix=/usr
+	make || return 1
+	make prefix=$startdir/pkg/usr install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a			\
+		ALIAS_README.TXT	\
+		ANALOG_README.TXT	\
+		GNU.TXT			\
+		INSTALL.TXT		\
+		LICENSE.TXT		\
+		MIT.TXT			\
+		doc/*			\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

@@ -1,0 +1,50 @@
+# Maintainer: Anders Kraneled <anders@kraneled.dk>
+
+pkgname=cplay
+pkgver=1.49
+pkgrel=1
+pkgdesc="Cplay is an ncurses frontend for various audioplayers. It depends on mpg321, but can handle flac, vorbis and musepack files if the appropriate players are installed."
+source=(http://www.tf.hut.fi/~flu/$pkgname/$pkgname-$pkgver.tar.gz)
+url="http://www.tf.hut.fi/~flu/cplay"
+md5sums=('fae9e13b8dafd98ffcd58cf9d6f92f33')
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#rel1: Initial Rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	make || return 1
+	make cplayrc || return 1
+
+	mkdir	-p 					\
+		$startdir/pkg/usr/bin 			\
+		$startdir/pkg/usr/man			\
+		$startdir/pkg/usr/man/man1		\
+		$startdir/pkg/etc			\
+		$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	cp cplayrc $startdir/pkg/etc/cplayrc
+
+	make PREFIX=$startdir/pkg/usr install
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	cp	-a		\
+		ChangeLog	\
+		LICENSE		\
+		Makefile	\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+}

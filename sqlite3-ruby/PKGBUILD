@@ -1,0 +1,22 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+RUBYSHORT=1.8
+
+pkgname=sqlite3-ruby
+pkgver=1.1.0
+pkgrel=1
+pkgdesc="sqlite3/ruby is a module to allow ruby scripts to interface with a sqlite3 database"
+url="http://sqlite-ruby.rubyforge.org"
+depends=('glibc' 'sqlite' 'ruby')
+source=(http://rubyforge.org/frs/download.php/3088/$pkgname-$pkgver.gem)
+md5sums=('5bb6e5145e271bcb7eb7f274a38c6387')
+
+build() {
+
+	cd $startdir/src
+
+	mkdir -p $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT
+	gem install $pkgname-$pkgver -l -i $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT || return 1
+
+}
+

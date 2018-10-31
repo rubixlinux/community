@@ -1,0 +1,18 @@
+--- Makefile.orig	2006-02-26 16:52:53.000000000 -0700
++++ Makefile	2006-02-26 16:54:32.000000000 -0700
+@@ -22,13 +22,13 @@
+ #
+ # Set this to the location where you want to install gEDA/gaf
+ #
+-prefix=$(HOME)/geda
++prefix=/usr
+ 
+ #
+ # You can set any global options you want here to be passed to the 
+ # individual ./configure scripts
+ #
+-opts=
++opts=--infodir=/usr/info --mandir=/usr/man
+ 
+ #
+ # Set this to the shell that you want the various commands to run in.

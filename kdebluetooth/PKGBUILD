@@ -1,0 +1,49 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=kdebluetooth
+pkgver=425997
+pkgrel=1
+pkgdesc="The KDE Bluetooth Framework is a set of tools built on top of Linux' Bluetooth stack BlueZ. Our goal is to provide easy access to the most common Bluetooth profiles and to make data exchange with Bluetooth enabled phones and PDAs as straightforward as possible."
+source=(ftp://ftp.kde.org/pub/kde/snapshots/kdeextragear-pim-$pkgver.tar.bz2)
+depends=('kdepim' 'glibc' 'fontconfig' 'x11' 'expat' 'openobex' 'zlib' 'libart_lgpl' 'qt' 'freetype2' 'glib' 'bluez-libs' 'libjpeg' 'libidn' 'mpeg4ip' 'libmng' 'xmms' 'gtk+' 'gcc' 'kdelibs' 'libpng')
+md5sums=('bcc676e979f8265694b35f28891acc64')
+url="http://kde-bluetooth.sourceforge.net"
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/kdeextragear-pim-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	cd $pkgname
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

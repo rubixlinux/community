@@ -1,0 +1,47 @@
+# Maintainer: Anders Kraneled <anders@kraneled.dk>
+
+pkgname=yafc
+pkgver=1.1
+pkgrel=1
+pkgdesc="YAFC is Yet Another FTP Client. YAFC is an commandline FTP client it features bash-like completion, queues, colored output, proxy-support and lots more."
+url="http://yafc.sourceforge.net"
+depends=('readline')
+source=(http://dl.sourceforge.net/sourceforge/yafc/$pkgname-$pkgver.tar.bz2)
+md5sums=(877c21d9b70d89474d1a6478a21c1e51)
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#rel1: Inital Rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=$startdir/pkg/usr
+	make || return 1
+	make prefix=$startdir/pkg/usr install
+
+	rm $startdir/pkg/usr/info/dir
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a				\
+		ABOUT-NLS			\
+		INSTALL				\
+		NEWS				\
+		BUGS				\
+		README				\
+		COPYING				\
+		THANKS				\
+		COPYRIGHT			\
+		TODO				\
+		contrib/yafc-import_ncftp.pl	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

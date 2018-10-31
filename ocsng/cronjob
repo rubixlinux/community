@@ -1,0 +1,15 @@
+#!/bin/sh
+
+ERRLOG="/root/###ocsinventory-client.log.err###"
+if [ -e '/usr/sbin/ocsinv' ]; then
+	/usr/sbin/ocsinv
+	exit 0;
+elif [ -e /etc/ocsinventory-client/ocsinventory-client.pl ]; then
+	perl /etc/ocsinventory-client/ocsinventory-client.pl
+	exit 0;
+else
+	echo ---Error report of OCSInventory CRON task--- > $ERRLOG
+	date >> $ERRLOG
+	echo "Executable ocsinv introuvable..." >> $ERRLOG
+	exit 1
+fi;

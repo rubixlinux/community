@@ -1,0 +1,56 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=privoxy
+pkgver=3.0.3
+pkgrel=2
+pkgdesc="Privoxy is a web proxy with advanced filtering capabilities for protecting privacy, modifying web page content, managing cookies, controlling access, and removing ads, banners, pop-ups and other obnoxious Internet junk. Privoxy has a very flexible configuration and can be customized to suit individual needs and tastes. Privoxy has application for both stand-alone systems and multi-user networks."
+url="http://www.privoxy.org"
+backup=('etc/privoxy/config')
+depends=('glibc' 'pcre')
+source=(http://switch.dl.sourceforge.net/sourceforge/ijbswa/$pkgname-$pkgver-stable-src.tar.gz	\
+	privoxy											)
+md5sums=('b0710be8af09409bfb03f52523a17010' \
+	 'dd7d5576b58e08eed52cc2e088775069' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: updated rc script to new format 2006.01.16
+##   rel1: initial rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver-stable
+
+	autoheader
+	autoconf
+	./configure				\
+		--prefix=/usr			\
+		--sysconfdir=/etc/$pkgname	\
+		--localstatedir=/var		\
+		--with-user=nobody		\
+		--with-group=nogroup
+	make || return 1
+	make	install						\
+		prefix=$startdir/pkg/usr			\
+		CONF_BASE=$startdir/pkg/etc/$pkgname		\
+		VAR_DEST=$startdir/pkg/var			\
+		DOC_DEST=$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	sed	-i						\
+		-e 's|^confdir.*$|confdir /etc/privoxy|'	\
+		-e 's|^logdir.*$|logdir /var/log/privoxy|'	\
+		$startdir/pkg/etc/privoxy/config
+
+	mkdir -p $startdir/pkg/etc/rc.d
+	cp $startdir/src/$pkgname $startdir/pkg/etc/rc.d
+
+	rmdir $startdir/pkg/usr/share
+	find $startdir/pkg -perm 664 -exec chmod 644 {} \;
+	chown -R root.bin $startdir/pkg/usr/sbin
+
+}

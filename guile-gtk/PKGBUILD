@@ -1,0 +1,37 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=guile-gtk
+pkgver=0.41
+pkgrel=1
+pkgdesc="guile-gtk brings the power of scheme to your graphical application. guile-gtk wraps Gtk+-1.2"
+url="http://www.gnu.org/software/guile-gtk"
+depends=('glibc' 'x11' 'gdk-pixbuf' 'glib' 'gtk+')
+source=(ftp://ftp.gnu.org/gnu/guile-gtk/$pkgname-$pkgver.tar.gz)
+md5sums=('4e3ddf52cec8d900dd2180d18a1a1dd8')
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	rm $startdir/pkg/usr/info/dir
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

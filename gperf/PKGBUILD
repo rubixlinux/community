@@ -1,0 +1,35 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gperf
+pkgver=3.0.1
+pkgrel=2
+pkgdesc="GNU gperf is a perfect hash function generator. For a given list of strings, it produces a hash function and hash table, in form of C or C++ code, for looking up a value depending on the input string. The hash function is perfect, which means that the hash table has no collisions, and the hash table lookup needs a single string comparison only."
+url="http://www.gnu.org/software/gperf"
+depends=('glibc' 'gcc')
+source=(ftp://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('00c0f7512710e1b68ab37bd2e68081bf')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mv $startdir/pkg/usr/share/doc $startdir/pkg/usr
+	mv $startdir/pkg/usr/doc/$pkgname $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README*		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	mv $startdir/pkg/usr/share/man $startdir/pkg/usr
+	rmdir $startdir/pkg/usr/share
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

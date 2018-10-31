@@ -1,0 +1,22 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+RUBYSHORT=1.8
+
+pkgname=actionmailer
+pkgver=1.2.1
+pkgrel=1
+pkgdesc="actionmailer -- service layer for easy email delivery and testing"
+url="http://www.rubyonrails.com"
+depends=('ruby' 'actionpack')
+source=(http://rubyforge.org/frs/download.php/9571/$pkgname-$pkgver.gem)
+md5sums=('890485893b19c2c2d250b058db2bc03d')
+
+build() {
+
+	cd $startdir/src
+
+	mkdir -p $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT
+	gem install $pkgname-$pkgver -l -i $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT || return 1
+
+}
+

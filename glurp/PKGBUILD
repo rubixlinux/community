@@ -1,0 +1,47 @@
+# Maintainer: Jordan Neumeyer <jnengland77@gmail.com>
+
+pkgname=glurp
+pkgver=0.11.6
+pkgrel=1
+pkgdesc="A GTK2 based graphical client with simple and clean interface"
+url="http://musicpd.org"
+depends=('glibc' 'freetype2' 'libglade' 'gtk+2' 'cairo' 'pango' 'atk' 'libxml2' 'fontconfig' 'x11' 'expat' 'glib2' 'zlib' 'libpng' 'mpd')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz	\
+	glurp.desktop								)
+md5sums=('17d1c780fe006b51886d774e387d0269' \
+	 '54cb1b5b2b68cf92ac417556cc96c1ac' )
+
+## Todo:
+##    None
+
+## Notes:
+##    None
+
+## Changelog:
+##    rel1: Initial Release to the /community
+
+
+build() {
+
+ 	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		INSTALL		\
+		README		\
+		NEWS		\
+		ChangeLog	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	
+	mkdir -p $startdir/pkg/usr/share/applications
+	cp $startdir/src/$pkgname.desktop $startdir/pkg/usr/share/applications/$pkgname.desktop
+
+}

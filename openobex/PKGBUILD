@@ -1,0 +1,32 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=openobex
+pkgver=1.0.1
+pkgrel=1
+pkgdesc="openobex is implementation of the Object Exchange (OBEX) protocol. OBEX is a session protocol and can best be described as a binary HTTP protocol."
+url="http://openobex.sourceforge.net/index.html"
+depends=('glibc')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('3742666bb98259face76be49b73ea89d')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make prefix=$startdir/pkg/usr install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING*	\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README*		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

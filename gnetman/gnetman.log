@@ -1,0 +1,17 @@
+Running configuration file /root/new/gnetman/pkg/usr/share/gEDA/system-gnetmanrc.tcl
+Usage: gnetman [options] [tcl scripts]
+   -d <level> -- Sets debug level.  Valid values are 0-3
+   -c <sch file> -- Creates a top level SPICE file with a .cir extension
+   -C <sch file> -- Creates a subcircuit SPICE file with a .cir extension
+   -g <sch file>  --  Generates a block symbol for the schematic
+   -h -- Print this command summary
+   -i -- Enter an interactive TCL shell after processing command line
+   -r <TCL file> -- Execute this TCL file after the system rc file and the 
+                    ${HOME}/.gEDA/gnetmanrc.tcl
+   -st <spice type> -- Choose a spice target format: pspice, hspice, tclspice,                      cdl, or ltspice
+   -sl <length> -- Set the max line length for SPICE output.  If 0, no line breaks are added
+   -v <sch file> -- Creates a Verilog file with a .v extension
+After processing arguments, any TCL files listed on the command line are
+executed.
+This is version 01Mar06, compiled on Mar  1 2006 15:17:55
+

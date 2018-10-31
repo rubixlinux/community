@@ -1,0 +1,40 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+RUBY=1.8.4
+RUBYSHORT=1.8
+
+pkgname=rake
+pkgver=0.7.1
+pkgrel=1
+pkgdesc="rake -- ruby based make-like utility"
+url="http://www.rubyonrails.org"
+depends=('ruby')
+source=(http://rubyforge.org/frs/download.php/9498/$pkgname-$pkgver.tgz	\
+	http://rubyforge.org/frs/download.php/9498/$pkgname-$pkgver.gem	)
+md5sums=('045fcdf3425c800a343179bc10d13cd6' \
+	 '9e9ebe0dd2e39dc08ff522b6a5ba23e5')
+
+build() {
+
+	cd $startdir/src
+
+	mkdir -p $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT
+	gem install $pkgname-$pkgver -l -i $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT || return 1
+
+	mv $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT/bin $startdir/pkg/usr
+
+	cd $pkgname-$pkgver
+	DESTDIR=$startdir/pkg ruby install.rb || return 1
+
+	mkdir -p $startdir/pkg/usr/doc/ruby-$RUBY/$pkgname-$pkgver
+	cp	-a		\
+		CHANGES		\
+		MIT-LICENSE	\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/ruby-$RUBY/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}
+

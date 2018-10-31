@@ -1,0 +1,51 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=compiz
+pkgver=20060326
+pkgrel=1
+pkgdesc="compiz"
+depends=('glibc' 'mesa3d' 'libXi' 'libgnomeui' 'esound' 'libwnck' 'fontconfig' 'expat' 'openssl' 'libgnomecanvas' 'libXrender' 'zlib' 'libdrm' 'libXcomposite' 'alsa-lib' 'libXau' 'libXdamage' 'libjpeg' 'libgnome' 'libXdmcp' 'audiofile' 'libxml2' 'libbonoboui' 'control-center' 'startup-notification' 'libpng' 'libXinerama' 'libSM' 'orbit2' 'libXext' 'libXxf86vm' 'libglade' 'gtk+2' 'atk' 'gconf' 'libICE' 'libart_lgpl' 'freetype2' 'libXres' 'libXfixes' 'pango' 'cairo' 'libXcursor' 'gnome-menus' 'libbonobo' 'libX11' 'gnome-desktop' 'glib2' 'gnome-keyring' 'gnome-vfs' 'libXrandr' 'popt')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to latest cvs 2006.04.26
+##   rel1: initial rubix release
+
+build() {
+
+	cd $startdir/src
+
+	cvs -d:pserver:anonymous@cvs.freedesktop.org:/cvs/xorg co app/compiz
+
+	cd app/compiz
+
+	./autogen.sh --prefix=/usr/X11R7
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/X11R7/lib/X11/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		COPYING.GPL	\
+		COPYING.MIT	\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/X11R7/lib/X11/doc/$pkgname-$pkgver
+
+	mkdir -p $startdir/pkg/usr/lib
+	mv $startdir/pkg/usr/X11R7/lib/pkgconfig $startdir/pkg/usr/lib
+
+	chown -R root.bin $startdir/pkg/usr/X11R7/bin
+
+	find $startdir/pkg -name *.la -exec rm {} \;
+
+}

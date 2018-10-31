@@ -1,0 +1,50 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=quasar
+pkgver=1.4.7
+pkgrel=1
+pkgdesc="quasar is a full function, stand-alone business accounting package."
+url="http://www.linuxcanada.com"
+depends=('libSM' 'glibc' 'libXext' 'libXxf86vm' 'mesa3d' 'fontconfig' 'expat' 'libICE' 'icu' 'libXrender' 'zlib' 'libdrm' 'libXau' 'qt' 'freetype2' 'libXfixes' 'libjpeg' 'libXcursor' 'libX11' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'tcl' 'gcc' 'libXft' 'libpng' 'libXrandr' 'libXinerama')
+source=(ftp://ftp.linuxcanada.com/pub/Quasar/$pkgver/source/$pkgname-${pkgver}_GPL.tgz	\
+	install.diff									\
+	$pkgname									)
+md5sums=('fe4080f86861120399cdf3fea35abe5d' \
+	 '4b04819f6353f9f1eb0c05a2263dd336' \
+	 '6a422c12129b94c8fb0f43a74e292929' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix Release
+
+build() {
+
+	cd $startdir/src/$pkgname-${pkgver}_GPL
+
+	patch -p1 < $startdir/src/install.diff || return 1
+
+	./configure
+	make || return 1
+	make PREFIX=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a			\
+		LICENSE.COMMERCIAL	\
+		LICENSE.GPL		\
+		Readme.txt		\
+		Release_*.txt		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	mkdir -p $startdir/pkg/etc/rc.d
+	cp $startdir/src/$pkgname $startdir/pkg/etc/rc.d
+
+	find $startdir/pkg -perm 664 -exec chmod 644 {} \;
+	find $startdir/pkg -perm 775 -exec chmod 755 {} \;
+	find $startdir/pkg -perm 777 ! -type l -exec chmod 755 {} \;
+
+}

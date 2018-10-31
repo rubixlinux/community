@@ -1,0 +1,41 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=kat
+pkgver=0.6.4
+pkgrel=1
+pkgdesc="Kat Desktop Search Environment is an open source framework designed to allow KDE applications to index and retrieve files. Metadata, fulltext and thumbnails are extracted from documents, images, mp3 and other media allowing quick and accurate information retrieval."
+depends=('qt' 'glibc' 'freetype2' 'sqlite' 'libjpeg' 'libidn' 'x11' 'fontconfig' 'expat' 'libmng' 'gcc' 'zlib' 'libpng' 'kdelibs' 'libart_lgpl')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('e57c6ced1966b73ac1310583be63bd2d')
+url="http://rcappuccio.altervista.org"
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INDEX		\
+		INSTALL		\
+		README		\
+		TODO		\
+		VERSION		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

@@ -1,0 +1,58 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=baghira
+pkgver=0.7cvs
+url="http://baghira.sourceforge.net"
+pkgrel=1
+pkgdesc="baghira is a perky imitation of Apple's OSX look"
+depends=('glibc' 'mesa3d' 'libXtst' 'fontconfig' 'expat' 'libXrender' 'zlib' 'libXau' 'acl' 'libjpeg' 'libidn' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'libXft' 'libXinerama' 'libpng' 'libXext' 'libSM' 'attr' 'libICE' 'kdebase' 'libart_lgpl' 'qt' 'freetype2' 'libXfixes' 'libXcursor' 'libX11' 'gcc' 'kdelibs' 'libXrandr')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 0.7cvs 2006.05.08
+##   rel1: upgraded to 0.7 2006.05.08
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -Os -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -Os -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src
+
+	cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/baghira login
+	cvs -d:pserver:anonymous@cvs.sf.net:/cvsroot/baghira co baghira
+
+	cd baghira
+
+	svn co svn://anonsvn.kde.org/home/kde/branches/KDE/3.5/kde-common/admin
+
+	make -f Makefile.cvs
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

@@ -1,0 +1,44 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=krename
+pkgver=3.0.11
+pkgrel=1
+pkgdesc="KRename is a powerful batch renamer for KDE. It allows you to easily rename hundreds or even more files in one go. The filenames can be created by parts of the original filename, numbering the files or accessing hundreds of informations about the file, like creation date or Exif informations of an image."
+url="http://www.krename.net"
+depends=('libSM' 'libXext' 'glibc' 'mesa3d' 'attr' 'fontconfig' 'expat' 'libICE' 'libXrender' 'zlib' 'libart_lgpl' 'libXau' 'qt' 'freetype2' 'acl' 'libXfixes' 'libjpeg' 'libXcursor' 'libidn' 'libX11' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'gcc' 'libXft' 'libXinerama' 'libXrandr' 'kdelibs' 'libpng')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('a3a426243a03cc9578204a3943f13c9a')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix release
+
+build() {
+
+	export MAKEFLAGS=""
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/opt/kde --enable-final --disable-debug
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

@@ -1,0 +1,29 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+# Contributor: dobey <dobeys@gmail.com>
+
+pkgname=gqview
+pkgver=2.0.1
+pkgrel=1
+pkgdesc="" 
+depends=('glibc' 'freetype2' 'gtk+2' 'cairo' 'pango' 'atk' 'x11' 'fontconfig' 'expat' 'glib2' 'zlib' 'libpng')
+source=(http://dl.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.gz )
+url="http://gqview.sourceforge.net/"
+md5sums=('acd8f1dad2b04389c1936adac1512e32')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/usr		\
+		--sysconfdir=/etc	\
+		--mandir=/usr/man	\
+		$CHOST
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mv $startdir/pkg/usr/share/doc $startdir/pkg/usr
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

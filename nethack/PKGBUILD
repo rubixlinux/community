@@ -1,0 +1,56 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=nethack
+pkgver=3.4.3
+pkgrel=1
+pkgdesc="NetHack is a single player dungeon exploration game."
+url="http://www.nethack.org"
+depends=('glibc' 'gpm' 'ncurses')
+backup=('usr/share/games/nethack/record'	\
+	'usr/share/games/nethack/logfile'	\
+	'usr/share/games/nethack/perm'		)
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-343-src.tgz	\
+	termcap.diff.gz								)
+md5sums=('21479c95990eefe7650df582426457f9' \
+	 '3e0c2887e2634b8361bc2fc63ee780a7' )
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver/sys/unix
+	sh setup.sh
+
+	cd $startdir/src/$pkgname-$pkgver/include
+	sed -i -e 's|/usr/games/lib/nethackdir|/usr/share/games/nethack/|g' config.h
+
+	cd $startdir/src/$pkgname-$pkgver/src
+	sed -i -e 's|WINTTYLIB = -ltermlib|# WINTTYLIB = -ltermlib|g' Makefile
+	sed -i -e 's|# WINTTYLIB = -lncurses|WINTTYLIB = -lncurses|g' Makefile
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	sed -i -e 's|GAMEDIR  = $(PREFIX)/games/lib/$(GAME)dir|GAMEDIR  = $(PREFIX)/share/games/$(GAME)|g' Makefile
+	patch -p0 < $startdir/src/termcap.diff || return 1
+	make || return 1
+	make PREFIX=$startdir/pkg/usr install
+
+	chown -R root.root $startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp -a doc/*.txt	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	mkdir -p $startdir/pkg/usr/man/man6
+	cp -a doc/*.6 $startdir/pkg/usr/man/man6
+
+	cd $startdir/pkg/usr/games
+	sed -i -e 's|HACKDIR='$startdir'/pkg/usr/share/games/nethack|HACKDIR=/usr/share/games/nethack|g' nethack
+
+	chown root.games	$startdir/pkg/usr/share/games/nethack/{record,logfile,perm}
+	chmod 660		$startdir/pkg/usr/share/games/nethack/{record,logfile,perm}
+	chown root.games	$startdir/pkg/usr/share/games/nethack/save
+	chmod 770		$startdir/pkg/usr/share/games/nethack/save
+	chown root.games	$startdir/pkg/usr/share/games/nethack
+	chmod 770		$startdir/pkg/usr/share/games/nethack
+	chown root.games	$startdir/pkg/usr/games/nethack
+	chmod 750		$startdir/pkg/usr/games/nethack
+
+}

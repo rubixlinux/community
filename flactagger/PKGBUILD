@@ -1,0 +1,35 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+RUBY=1.8.4
+
+pkgname=flactagger
+pkgver=2.0.1
+pkgrel=1
+pkgdesc="flactagger is a tool for tagging flac files"
+url="http://flactagger.berlios.de"
+depends=('glibc' 'flac' 'ruby')
+source=(http://download.berlios.de/flactagger/$pkgname-$pkgver.tar.bz2)
+md5sums=('66dd0a40478771974e6cdf9aeeaca5c8')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	ruby setup.rb config || return 1
+	ruby setup.rb setup || return 1
+	ruby setup.rb install --prefix=$startdir/pkg || return 1
+
+	mkdir -p $startdir/pkg/usr/doc/ruby-$RUBY/$pkgname-$pkgver
+	cp	-a	\
+		COPYING	\
+		INSTALL	\
+		NEWS	\
+		README	\
+	$startdir/pkg/usr/doc/ruby-$RUBY/$pkgname-$pkgver	
+
+	find $startdir/pkg -perm 555 -exec chmod 755 {} \;
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}
+

@@ -1,0 +1,26 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=unrar
+pkgver=3.5.4
+pkgrel=1
+pkgdesc="unrar - utility to decompress rar files"
+depends=('glibc' 'gcc')
+source=(http://www.rarlab.com/rar/${pkgname}src-3.5.4.tar.gz	\
+	License.txt.gz						)
+md5sums=('3c3901173888e08dac22fca8a93ec5e6' \
+	 '42280cd1e0a2fdc7c8dcf9a48268b35a' )
+
+build() {
+
+	cd $startdir/src/$pkgname
+
+	make -f makefile.unix
+
+	mkdir -p $startdir/pkg/usr/bin
+	cp unrar $startdir/pkg/usr/bin
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp $startdir/src/License.txt $startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

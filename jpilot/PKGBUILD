@@ -1,0 +1,28 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=jpilot
+pkgver=0.99.7
+pkgrel=2
+pkgdesc="J-Pilot is a desktop organizer application for PalmOS devices. It is meant to be an alternative to the Palm Desktop for those who run the most popular Operating Systems in the World, Linux and Unix."
+depends=('glibc' 'gtk+2' 'atk' 'ncurses' 'x11' 'fontconfig' 'openssl' 'expat' 'zlib' 'readline' 'pilot-link' 'freetype2' 'pango' 'cairo' 'gpm' 'glib2' 'libpng')
+url=(http://www.jpilot.org)
+source=(http://jpilot.org/$pkgname-$pkgver.tar.gz)
+md5sums=('11bb7236702e2e4c7e3d06372bdc9695')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr --enable-gtk2
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc
+	mv	$startdir/pkg/usr/share/doc/$pkgname-$pkgver $startdir/pkg/usr/doc/$pkgname-$pkgver
+	rmdir	$startdir/pkg/usr/share/doc
+
+	rm -r $startdir/pkg/usr/share/gnome
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

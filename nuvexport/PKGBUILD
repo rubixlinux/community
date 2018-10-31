@@ -1,0 +1,37 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+SUBVER=0.20060125
+
+pkgname=nuvexport
+pkgver=0.2
+pkgrel=1
+pkgdesc="nuvexport is simply a perl-based wrapper script that lets you export your MythTV recordings into other formats, including XviD, SVCD, VCD and others. more..."
+url="https://svn.forevermore.net/nuvexport"
+depends=('mythtv' 'perl')
+source=(http://forevermore.net/files/$pkgname/$pkgname-$pkgver-$SUBVER.svn.tar.bz2)
+md5sums=('df92b628a153fa855ecfe63c6a9e596f')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   Initial rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	make prefix=$startdir/pkg/usr install || return 1
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a	\
+		COPYING	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

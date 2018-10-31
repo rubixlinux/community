@@ -1,0 +1,23 @@
+--- xorg/GL/symlink-mesa.sh.orig	2006-03-20 09:34:15.000000000 -0700
++++ xorg/GL/symlink-mesa.sh	2006-03-20 09:35:40.000000000 -0700
+@@ -448,6 +448,10 @@
+     action slang_utility.c
+     action slang_utility.h
+     action traverse_wrap.h
++    action slang_library_texsample.c
++    action slang_library_texsample.h
++    action slang_analyse.c
++    action slang_analyse.h
+ }
+ 
+ symlink_mesa_shader_slang_library() {
+--- xorg/GL/mesa/shader/slang/Makefile.am.orig	2006-03-20 09:34:51.000000000 -0700
++++ xorg/GL/mesa/shader/slang/Makefile.am	2006-03-20 09:35:15.000000000 -0700
+@@ -32,4 +32,6 @@
+ 		      slang_link.c \
+ 		      slang_preprocess.c \
+ 		      slang_storage.c \
+-		      slang_utility.c
++		      slang_utility.c \
++		      slang_library_texsample.c \
++		      slang_analyse.c

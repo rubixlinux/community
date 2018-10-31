@@ -1,0 +1,49 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gtk-qt-engine
+pkgver=0.6
+pkgrel=3
+pkgdesc="gtk-qt-engine The GTK-Qt Theme Engine is a project allowing GTK to use Qt widget styles."
+url="http://www.freedesktop.org/Software/gtk-qt"
+depends=('glibc' 'qt' 'mesa3d' 'libXi' 'fontconfig' 'expat' 'libXrender' 'zlib' 'libdrm' 'libXau' 'libjpeg' 'libidn' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'libXft' 'libXinerama' 'libpng' 'libXext' 'libSM' 'libXxf86vm' 'gtk+2' 'atk' 'libICE' 'libart_lgpl' 'freetype2' 'cairo' 'libXfixes' 'pango' 'libXcursor' 'libX11' 'glib2' 'gcc' 'libXrandr' 'kdelibs')
+source=(http://www.freedesktop.org/~davidsansome/$pkgname-$pkgver.tar.bz2	\
+	gtk-2.8.diff								)
+md5sums=('9c02c95a6e8d304b1f2801429759e1c0' \
+	 '8b8d9d95fe481699fe79e5d1617468ec' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel3: added fix for gtk >= 2.8 2006.03.28
+##   rel2: Rebuilt 2005.05.15
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	patch -p0 < $startdir/src/gtk-2.8.diff || return 1
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		INSTALL		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

@@ -1,0 +1,38 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=iaxclient
+pkgver=20050810
+pkgrel=1
+pkgdesc="iaxclient is a portable IAX/IAX2 protocol telephony client library."
+url="http://iaxclient.sourceforge.net/"
+source=($pkgname.tar.bz2)
+md5sums=('c82a34e7820c3475b00530dce9ec4020')
+depends=('glibc')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: initial Rubix release 2005.08.10
+
+build() {
+
+	cd $startdir/src/$pkgname/lib
+
+	make shared || return 1
+
+	mkdir -p $startdir/pkg/usr/lib
+	cp libiaxclient.so $startdir/pkg/usr/lib
+
+	cd ..
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		COPYING.LIB	\
+		README		\
+		lib/TODO	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

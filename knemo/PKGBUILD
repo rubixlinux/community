@@ -1,0 +1,51 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=knemo
+pkgver=0.3.1
+pkgrel=1
+pkgdesc="KNemo - the KDE Network Monitor"
+depends=('kdelibs' 'qt')
+source=(http://www.eris23.de/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('774b7b085e7b2d492bf811d7f89cee6e')
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a			\
+		AUTHORS			\
+		COPYING			\
+		ChangeLog		\
+		INSTALL			\
+		INSTALL.Mandrake	\
+		NEWS			\
+		README			\
+		TODO			\
+		VERSION			\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

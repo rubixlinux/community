@@ -1,0 +1,52 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=ngspice
+pkgver=17
+pkgrel=2
+pkgdesc="An open source GPLed mixed-mode/mixed-level circuit simulator."
+url="http://ngspice.sourceforge.net"
+depends=('glibc' 'x11')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/ng-spice-rework-$pkgver.tar.gz)
+md5sums=('abe283dea98b913a2122f085076865b1')
+groups=('geda-suite')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: added to geda-suite group 2006.03.02
+##   rel1: upgraded to rework-17 2005.10.02
+##   rel1: Initial Rubix release
+
+build() {
+
+	cd $startdir/src/ng-spice-rework-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make install DESTDIR=$startdir/pkg
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a			\
+		ANALYSES		\
+		AUTHORS			\
+		BUGS			\
+		COPYING			\
+		ChangeLog		\
+		DEVICES			\
+		FAQ			\
+		INSTALL			\
+		NEWS			\
+		README			\
+		Stuarts_Poly_Notes	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	ln -s ngspice	$startdir/pkg/usr/bin/spice
+	ln -s ngspice.1	$startdir/pkg/usr/man/man1/spice.1
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

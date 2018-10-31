@@ -1,0 +1,58 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+MOZILLA=1.7.12
+
+pkgname=mplayerplug-in
+pkgver=3.21
+pkgrel=1
+pkgdesc="mplayerplug-in is a browser plugin that uses mplayer to play digital media from websites."
+url="http://mplayerplug-in.sourceforge.net"
+depends=('glibc' 'freetype2' 'gtk+2' 'cairo' 'pango' 'atk' 'x11' 'fontconfig' 'expat' 'firefox' 'glib2' 'zlib' 'gcc' 'libpng' 'mplayer')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz						\
+ftp://ftp.mozilla.org/pub/mozilla.org/mozilla/releases/mozilla$MOZILLA/gecko-sdk-i686-pc-linux-gnu-$MOZILLA.tar.gz	)
+md5sums=('3e36aa1a42aa312b312ba7ceaaa75f73' \
+	 '5d22fc04d6ff740d2459d005c0b16cd9' )
+
+## Todo:
+##   None
+
+## Notes:
+##   does not like pie
+
+## Changelog:
+##   rel1: upgraded to 3.21 2006.02.14
+##   rel1: upgraded to 3.17 2005.12.08
+##   rel1: upgraded to 3.16 2005.12.07
+##   rel2: moved plugins to generic plugin dir 2005.11.01
+##   rel1: initial rubix release 3.11 2005.10.17
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+
+	cd $startdir/src/$pkgname
+
+	./configure						\
+		--with-gecko-sdk=$startdir/src/gecko-sdk	\
+		--enable-gtk2					\
+		--enable-wmp					\
+		--enable-qt					\
+		--enable-rm					\
+		--enable-gmp
+	make || return 1
+
+	mkdir -p $startdir/pkg/usr/lib/mozilla/plugins
+	cp mplayerplug-in*.so mplayerplug-in*.xpt $startdir/pkg/usr/lib/mozilla/plugins
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		ChangeLog	\
+		INSTALL		\
+		LICENSE		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+}

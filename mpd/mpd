@@ -1,0 +1,34 @@
+#!/bin/bash
+
+SCRIPT=`basename $0`
+PROG=/usr/bin/mpd
+
+. /etc/rubixlib
+case "$1" in
+	start)
+		start_daemon $SCRIPT $PROG
+		;;
+	stop)
+		stop_daemon $SCRIPT $PROG
+		;;
+	update-db)
+		stat_busy "updating mpd's database"
+		$SCRIPT --update-db > /var/log/mpd.db-update
+		stat_done
+		;;
+	create-db)
+		stat_busy "creating mpd's database"
+		$SCRIPT --create-db > /var/log/mpd.db-creation
+		stat_done
+		;;
+	restart)
+		$0 stop
+		sleep 1
+		$0 start
+		;;
+	status)
+		daemon_status $SCRIPT $PROG
+		;;
+	*)
+		stat_err "usage: $0 {start|stop|restart|status|update-db|create-db}"
+esac

@@ -1,0 +1,53 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=tilp
+pkgver=6.78
+pkgrel=1
+pkgdesc="TiLP is a linking program for Texas Instruments' graphing calculators."
+depends=('libglade' 'libusb')
+source=(libticables-3.8.9.tar.gz	\
+	libticalcs-4.5.8.tar.gz		\
+	libtifiles-0.6.3.tar.gz		\
+	tilp.tar.gz			\
+	install.diff.gz			)
+md5sums=('37a15c31ff842f0bdd2c74398b3f9b24' \
+	 'c9eb389918b56f633d18c0f7cbe4cdc8' \
+	 '9348659a546838ec7187234fbe401e91' \
+	 '380301241391f0ec30001d59325e8ba9' \
+	 '48704537de27e97697abea84e9fe70bf' )
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#rel1: Initial Rubix Release
+
+build() {
+
+	cd $startdir/src/libticables-3.8.9
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	cd $startdir/src/libtifiles-0.6.3
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	cd $startdir/src/libticalcs-4.5.8
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	cd $startdir/src/$pkgname-$pkgver
+	./configure --prefix=/usr
+	patch -p1 < $startdir/src/install.diff
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

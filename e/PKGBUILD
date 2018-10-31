@@ -1,0 +1,63 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=e
+pkgver=20060124
+pkgrel=1
+pkgdesc="Enlightenment"
+depends=('glibc' 'freetype2' 'ecore' 'edje' 'libjpeg' 'eet' 'evas' 'x11' 'openssl' 'embryo' 'zlib')
+groups=('e17')
+source=(xinitrc.$pkgname)
+md5sums=('f6e0923064d64d11d73c3779236886ee')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to latest cvs 2006.01.24
+##   rel1: upgraded to latest cvs 2005.10.06
+##   rel1: upgraded to latest cvs 2005.08.26
+##   rel1: Initial Rubix Release 2005.04.30
+
+build() {
+
+	cd $startdir/src
+
+	cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment login
+	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment co e17/apps/$pkgname
+
+	cd e17/apps/$pkgname
+
+	./autogen.sh
+	./configure			\
+		--prefix=/usr		\
+		--sysconfdir=/etc/X11	\
+		--enable-static=no	\
+		--enable-xinerama	\
+		$CHOST
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		ABOUT-NLS	\
+		AUTHORS		\
+		COPYING		\
+		COPYING-PLAIN	\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	mkdir -p $startdir/pkg/etc/X11/xinit
+	cp $startdir/src/xinitrc.$pkgname $startdir/pkg/etc/X11/xinit
+
+	chmod 4755 $startdir/pkg/usr/lib/enlightenment/modules/cpufreq/linux-gnu-i486/freqset
+
+}

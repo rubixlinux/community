@@ -1,0 +1,44 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=mm_mod_auth_ldap
+pkgver=3.07
+pkgrel=2
+pkgdesc="LDAP Authentication module for Apache 1.3.x"
+url="http://www.muquit.com/muquit/software/mod_auth_ldap/mod_auth_ldap.html"
+depends=('glibc' 'openssl' 'openldap' 'cyrus-sasl' 'apache')
+source=(http://www.muquit.com/muquit/software/mod_auth_ldap/$pkgname$pkgver.tar.gz)
+md5sums=('284771cefe6af3a3c38aeee187f7e05d')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: rebuilt against openldap 2.3 2006.03.10
+##   rel1: initial rubix release
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src/$pkgname$pkgver
+
+	./configure				\
+		--with-apache-dir=/usr		\
+		--with-ldap-dir=/usr		\
+		--with-apxs=/usr/sbin/apxs	\
+		--with-apache-ver=1		\
+		--with-mem-cache		\
+		--with-ssl=yes
+	make || return 1
+
+	mkdir -p $startdir/pkg/usr/libexec/apache
+	cp $pkgname.so $startdir/pkg/usr/libexec/apache
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp -a README* $startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+}

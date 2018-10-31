@@ -1,0 +1,40 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=ksplash-engine-moodin
+pkgver=0.4.2
+pkgrel=1
+pkgdesc="ksplash-engine-moodin splash screen engine for kde"
+depends=('glibc' 'fontconfig' 'x11' 'expat' 'kdebase' 'zlib' 'libart_lgpl' 'qt' 'freetype2' 'libjpeg' 'libidn' 'libmng' 'gcc' 'kdelibs' 'libpng')
+source=(http://moodwrod.com/files/${pkgname}_$pkgver.tar.gz)
+md5sums=('322404928ed7e17a1c8708d4dc13b960')
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/moodin
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver	
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

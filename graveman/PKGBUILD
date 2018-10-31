@@ -1,0 +1,57 @@
+# Maintainer: Jordan Neumeyer <jnengland77@gmail.com>
+
+REALVER=0.3.12-4
+
+pkgname=graveman
+pkgver=0.3.12.4
+pkgrel=2
+pkgdesc="A GTK2 CD-burning frontend for mkisofs, cdrecord and friends"
+url="http://graveman.tuxfamily.org/index-e.php"
+depends=('glibc' 'libglade' 'gtk+2' 'flac' 'atk' 'libid3tag' 'fontconfig' 'x11' 'expat'	\
+	 'libogg' 'zlib' 'freetype2' 'libjpeg' 'pango' 'cairo' 'libxml2' 'libvorbis'	\
+	 'libmad' 'glib2' 'libmng' 'libpng' 'dvd+rw-tools' 'cdrtools' 'cdrdao'		)
+source=(http://graveman.tuxfamily.org/sources/$pkgname-$REALVER.tar.bz2	\
+	$pkgname.desktop						)
+md5sums=('2b1b807fc60f27ea58d83a5d28a9c6bf' \
+	 '07aed3cd471441fdacc604cbf15d669a' )
+
+## Todo
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: added graveman.desktop for proper labeling
+##   rel1: initial /community release 2006.02.02
+
+build() {
+
+	cd $startdir/src/$pkgname-$REALVER
+
+	./configure			\
+		 --prefix=/usr		\
+		 --sysconfdir=/etc
+		$CHOST
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$REALVER
+	cp	-a			\
+		AUTHORS			\
+		COPYING			\
+		ChangeLog		\
+		INSTALL			\
+		NEWS			\
+		README			\
+		README.fr		\
+		THANKS			\
+		TRANSLATE-HOWTO.fr	\
+	$startdir/pkg/usr/doc/$pkgname-$REALVER
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+        mkdir -p $startdir/pkg/usr/share/applications
+        cp $startdir/src/$pkgname.desktop $startdir/pkg/usr/share/applications/$pkgname.desktop
+
+}

@@ -1,0 +1,45 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gtkpod
+pkgver=0.99.4
+pkgrel=1
+pkgdesc="gtkpod is a platform independent GUI for Apple's iPod using GTK2."
+url="http://www.gtkpod.org"
+depends=('libXext' 'glibc' 'libXi' 'libglade' 'gtk+2' 'atk' 'hal' 'libid3tag' 'fontconfig' 'expat' 'libXrender' 'zlib' 'libXau' 'freetype2' 'libXfixes' 'pango' 'cairo' 'libXcursor' 'libX11' 'libXdmcp' 'dbus' 'libxml2' 'mpeg4ip' 'glib2' 'gcc' 'libgpod' 'libpng' 'libXrandr' 'libXinerama')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('5d153249b2586ffefc47e0f4a58ef58e')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 0.99.4 2006.05.17
+##   rel2: added mpeg4ip as a dep so gtkpod can handle aac files 2005.05.28
+##   rel1: Initial Rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make prefix=$startdir/pkg/usr install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODOandBUGS.txt	\
+		TROUBLESHOOTING	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

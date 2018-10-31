@@ -1,0 +1,55 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=kdesvn
+pkgver=0.8.3
+pkgrel=1
+pkgdesc="KDESvn is a frontend to the subversion vcs. In difference to most other tools it uses the subversion C-Api direct via a c++ wrapper made by Rapid SVN and doesn't parse the output of the subversion client. So it is a real client itself instead of a frontend to the command line tool."
+depends=('glibc' 'mesa3d' 'db' 'heimdal' 'gdbm' 'fontconfig' 'openssl' 'expat' 'libXrender' 'zlib' 'libXau' 'acl' 'libjpeg' 'libidn' 'libXdmcp' 'libXmu' 'libmng' 'libXt' 'libXft' 'libXinerama' 'libpng' 'libXext' 'libSM' 'attr' 'subversion' 'e2fsprogs' 'libICE' 'libart_lgpl' 'qt' 'freetype2' 'libXfixes' 'libXcursor' 'libX11' 'gcc' 'kdelibs' 'libXrandr')
+source=(http://www.alwins-world.de/programs/download/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('1e332d5b58db5f7c4a363fddcecffd2c')
+url="http://www.alwins-world.de/programs/kdesvn"
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 0.8.3 2006.05.08
+##   rel1: upgraded to 0.7.3 2006.02.15
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/opt/kde
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING*	\
+		ChangeLog	\
+		GPL.txt		\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	rm $startdir/pkg/opt/kde/share/services/svn+file.protocol
+	rm $startdir/pkg/opt/kde/share/services/svn+http.protocol
+	rm $startdir/pkg/opt/kde/share/services/svn+https.protocol
+	rm $startdir/pkg/opt/kde/share/services/svn+ssh.protocol
+	rm $startdir/pkg/opt/kde/share/services/svn.protocol
+
+}

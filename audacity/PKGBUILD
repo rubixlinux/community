@@ -1,0 +1,47 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=audacity
+pkgver=1.3.0
+pkgrel=1
+pkgdesc="audacity is free, open source software for recording and editing sounds"
+url="http://audacity.sourceforge.net"
+depends=('glibc' 'libXi' 'libtiff' 'wxgtk' 'libid3tag' 'fontconfig' 'expat' 'libXrender' 'zlib' 'alsa-lib' 'libXau' 'libjpeg' 'libXdmcp' 'libvorbis' 'libmad' 'libXinerama' 'libpng' 'sdl' 'libXext' 'libXxf86vm' 'gtk+2' 'flac' 'atk' 'libogg' 'freetype2' 'pango' 'cairo' 'libXfixes' 'libXcursor' 'libX11' 'glib2' 'gcc' 'libXrandr')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-src-$pkgver.tar.gz)
+md5sums=('efefaa0e37fab227f488bb5b6b9308c4')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix release
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src/$pkgname-src-$pkgver-beta
+
+	cd lib-src/portaudio-v19
+	./configure --prefix=/usr
+	cd ../..
+
+	./configure			\
+		--prefix=/usr		\
+		--with-libflac=system	\
+		--with-libmad=system	\
+		--with-vorbis=system	\
+		--with-id3tag=system	\
+		--with-portaudio=v19	\
+		--without-portmixer
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mv $startdir/pkg/usr/share/doc $startdir/pkg/usr
+	mv $startdir/pkg/usr/doc/$pkgname $startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

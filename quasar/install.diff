@@ -1,0 +1,64 @@
+--- quasar-1.4.7_GPL/install.in.orig	2006-04-03 22:16:45.000000000 -0600
++++ quasar-1.4.7_GPL/install.in	2006-04-03 22:21:04.000000000 -0600
+@@ -117,44 +117,6 @@
+     chmod 640 $CONFIG_DIR_P/firebird.cfg
+     fi
+ 
+-
+-    # Add group and user and setup permissions
+-    if [ "$UID" == "0" ]; then
+-	groupadd quasar >/dev/null 2>/dev/null
+-	useradd -g quasar -d $TOP_DIR -s /bin/bash -c "Quasar" quasar 2>/dev/null
+-	chgrp -R quasar $CONFIG_DIR
+-	chgrp -R quasar $DATA_DIR
+-
+-	if [ ! -e /var/log/quasar ]; then
+-	    mkdir /var/log/quasar
+-	fi
+-	chown quasar /var/log/quasar
+-	chgrp quasar /var/log/quasar
+-    fi
+-
+-    # Add inetd or xinetd entry for server
+-    if [ -e /etc/init.d/xinetd ]; then
+-	$INSTALL -m 0664 -D setup/quasar.xinetd $PREFIX/etc/xinetd.d/quasar
+-	if [ "$UID" == "0" ]; then
+-	    /etc/init.d/xinetd restart
+-	    if [ -x /sbin/chkconfig ]; then
+-		/sbin/chkconfig xinetd on
+-	    elif [ -x /sbin/rc-update ]; then
+-		/sbin/rc-update add xinetd default
+-	    fi
+-	fi
+-    elif [ -e /etc/inetd.conf ]; then
+-	if [ ! $(grep -q quasar /etc/services) ]; then
+-	    echo -e "quasar\t\t3599/tcp" >>/etc/services
+-	fi
+-	if [ ! $(grep -q quasar /etc/inetd.conf) ]; then
+-	    echo -e "quasar\t\tstream\ttcp\tnowait\tquasar.quasar\t/opt/quasar/bin/quasar_clientd" >>/etc/inetd.conf
+-	    /etc/init.d/inetd restart
+-	fi
+-    else
+-	echo "ERROR: can't install server process using xinetd or inetd"
+-	echo "       you will need to setup quasard to run at boot time"
+-    fi
+ }
+ 
+ function install_client ()
+@@ -186,16 +148,8 @@
+     echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE ClientConfig>\n<ClientConfig>\n  <localeDir>$LOCALE_DIR</localeDir>\n  <stationNumber>1</stationNumber>\n</ClientConfig>" >$CONFIG_DIR_P/client.cfg
+     chmod 644 $CONFIG_DIR_P/client.cfg
+ 
+-    # Add group and user
+-    if [ "$UID" == "0" ]; then
+-	groupadd quasar >/dev/null 2>/dev/null
+-	useradd -g quasar -d $TOP_DIR -s /bin/bash -c "Quasar" quasar 2>/dev/null
+-	chgrp -R quasar $CONFIG_DIR
+-    fi
+-
+ }
+ 
+-
+ if [ -z "$@" ]; then
+     install_all
+ else

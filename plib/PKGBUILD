@@ -1,0 +1,42 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=plib
+pkgver=1.8.4
+pkgrel=1
+pkgdesc="plib is a suite of portable game libraries."
+url="http://plib.sourceforge.net"
+source=(http://plib.sourceforge.net/dist/$pkgname-$pkgver.tar.gz)
+md5sums=('5e3f289a9d1c5de0b1cfdec76bf139e6')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix Release 2005.09.06
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		KNOWN_BUGS	\
+		NEWS		\
+		NOTICE		\
+		README*		\
+		TODO*		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+}

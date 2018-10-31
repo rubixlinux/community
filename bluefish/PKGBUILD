@@ -1,0 +1,34 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=bluefish
+pkgver=1.0.4
+pkgrel=1
+pkgdesc="Bluefish is a powerful editor for experienced web designers and programmers. Bluefish supports many programming and markup languages, but it focuses on editing dynamic and interactive websites."
+url="http://bluefish.openoffice.nl"
+depends=('glibc' 'aspell' 'freetype2' 'gtk+2' 'cairo' 'pango' 'atk' 'pcre' 'fontconfig' 'x11' 'expat' 'glib2' 'gcc' 'zlib' 'libpng')
+source=(ftp://bluefish.breezedev.com/$pkgname/downloads/$pkgname-$pkgver.tar.bz2)
+md5sums=('8d5c1b7315cdc935aa024954093d2b32')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL*	\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

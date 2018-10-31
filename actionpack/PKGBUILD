@@ -1,0 +1,22 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+RUBYSHORT=1.8
+
+pkgname=actionpack
+pkgver=1.12.1
+pkgrel=1
+pkgdesc="actionpack -- web-flow and rendering framework putting the vc in mvc"
+url="http://www.rubyonrails.com"
+depends=('ruby' 'activesupport')
+source=(http://rubyforge.org/frs/download.php/9568/$pkgname-$pkgver.gem)
+md5sums=('377632f15df44fe70b221d8b87db0e20')
+
+build() {
+
+	cd $startdir/src
+
+	mkdir -p $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT
+	gem install $pkgname-$pkgver -l -i $startdir/pkg/usr/lib/ruby/gems/$RUBYSHORT || return 1
+
+}
+

@@ -1,0 +1,90 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+SIMGEAR=0.3.8
+
+pkgname=flightgear
+pkgver=0.9.8
+pkgrel=1
+pkgdesc="The FlightGear flight simulator project is an open-source, multi-platform, cooperative flight simulator development project."
+url="http://www.flightgear.org"
+depends=('glibc' 'x11' 'gcc' 'zlib' 'openal' 'glut')
+source=(ftp://ftp.kingmont.com/flightsims/$pkgname/Source/FlightGear-$pkgver.tar.gz	\
+	ftp://ftp.kingmont.com/flightsims/$pkgname/Shared/fgfs-base-$pkgver.tar.bz2	\
+	ftp://ftp.simgear.org/pub/simgear/Source/SimGear-$SIMGEAR.tar.gz		)
+md5sums=('614d11b4fc75479cb3bf42a333705242' \
+	 '7354da8d5232ee02daee8d8759e83af3' \
+	 '5e3f289a9d1c5de0b1cfdec76bf139e6' \
+	 'd535880954b8d9393f55cc51ee045c60' )
+
+## Todo:
+##   None
+
+## Notes:
+##   2 step build
+
+## Changelog:
+##   rel1: Initial Rubix Release 2005.06.26
+
+build() {
+
+	makesimgear
+	makeflightgear
+
+	mkdir -p $startdir/pkg/usr/share
+	cp -a $startdir/src/data $startdir/pkg/usr/share/FlightGear
+
+	find $startdir/pkg -perm  444 -exec chmod 644 {} \;
+	find $startdir/pkg -perm  555 -exec chmod 755 {} \;
+	find $startdir/pkg -perm  600 -exec chmod 644 {} \;
+	find $startdir/pkg -perm  666 -exec chmod 644 {} \;
+	find $startdir/pkg -perm  700 -exec chmod 755 {} \;
+	find $startdir/pkg -perm  777 -exec chmod 755 {} \;
+	find $startdir/pkg -perm 2755 -exec chmod 755 {} \;
+	find $startdir/pkg -perm 2777 -exec chmod 755 {} \;
+
+}
+
+makesimgear() {
+
+	cd $startdir/src/SimGear-$SIMGEAR
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/SimGear-$SIMGEAR
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README*		\
+		TODO		\
+	$startdir/pkg/usr/doc/SimGear-$SIMGEAR
+
+}
+
+makeflightgear() {
+
+	cd $startdir/src/FlightGear-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		Thanks		\
+		docs-mini	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin $startdir/pkg/usr/sbin
+
+}

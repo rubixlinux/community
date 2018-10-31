@@ -1,0 +1,34 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=easy_spice
+pkgver=0.6.1
+pkgrel=1
+pkgdesc="easy_spice - This program allows to run spice in batch mode. A graphic interface made with GTK+ makes it possible to select the analyses to be carried out. It uses gschem as a schematic for an automatic generation of the netlist."
+url="http://www.greyc.ensicaen.fr/~routoure/program/easy_spice/en/easy_spice_en.html"
+groups=('geda-suite')
+depends=('glibc' 'x11' 'glib' 'gtk+' 'geda' 'ngspice')
+source=(http://www.greyc.ensicaen.fr/~routoure/program/easy_spice/en/$pkgname-$pkgver.tar.gz)
+md5sums=('44330d0174f91e78da0b5660587ce048')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		ABOUT-NLS	\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

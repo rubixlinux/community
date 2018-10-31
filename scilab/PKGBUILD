@@ -1,0 +1,75 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=scilab
+pkgver=4.0
+pkgrel=2
+pkgdesc="Scilab is a scientific software package for numerical computations providing a powerful open computing environment for engineering and scientific applications. Developed since 1990 by researchers from INRIA and ENPC, it is now maintained and developed by Scilab Consortium since its creation in May 2003."
+url="http://scilabsoft.inria.fr"
+depends=('glibc' 'libXi' 'vte' 'fontconfig' 'libgnomecanvas' 'expat' 'gail' 'libXrender' 'zlib' 'libXau' 'libxml2' 'libXdmcp' 'tcl' 'libpng' 'libXinerama' 'libXft' 'libSM' 'libXext' 'gtk+2' 'atk' 'ncurses' 'libICE' 'libart_lgpl' 'readline' 'freetype2' 'cairo' 'pango' 'libXfixes' 'libXcursor' 'libX11' 'glib2' 'libgtkhtml' 'gcc' 'libXrandr' 'tk')
+source=(http://scilabsoft.inria.fr/download/stable/$pkgname-$pkgver-src.tar.gz		\
+	http://scilabsoft.inria.fr/download/stable/man-eng-$pkgname-$pkgver.tar.gz	)
+md5sums=('26e1c1480453bb1021bcea3ac412ad19' \
+	 'dd8f6b1da5aaf8707793f5cd77ad19cf' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel2: fixed symlinks 2006.03.28
+##   rel1: upgraded to 4.0 2006.03.27
+##   rel3: rebuilt with tk, java and ocaml 2005.10.31
+##   rel2: got gtk2 working 2005.09.06
+##   rel1: 3.1.1 initial rubix release 2005.08.30
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/usr		\
+		--with-ocaml		\
+		--with-java		\
+		--with-tk		\
+		--with-gtk2		\
+		--with-local-xaw
+	make all || return 1
+	make PREFIX=$startdir/pkg/usr install
+
+	cd $startdir/pkg/usr/bin
+	rm intersci
+	rm intersci-n
+	rm scilab
+	ln -s /usr/lib/scilab-$pkgver/bin/intersci
+	ln -s /usr/lib/scilab-$pkgver/bin/intersci-n
+	ln -s /usr/lib/scilab-$pkgver/bin/scilab
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	mv $startdir/pkg/usr/share/doc $startdir/pkg/usr
+	rmdir $startdir/pkg/usr/share
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+	cp $startdir/src/man-eng-$pkgname-$pkgver.tar.gz $startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	for file in		\
+		bin/Blpr	\
+		bin/BEpsf	\
+		bin/Blatexpr2	\
+		bin/Blatexprs	\
+		bin/Blatexpr	\
+		bin/scilab	\
+		util/Blatdoc	\
+		util/Blatdocs
+	do
+		sed -e "s%$startdir/pkg/usr/lib/$pkgname-$pkgver%/usr/lib/$pkgname-$pkgver%" -i $startdir/pkg/usr/lib/$pkgname-$pkgver/$file
+	done
+
+	find $startdir/pkg -perm 775 -exec chmod 755 {} \;
+	find $startdir/pkg -perm 664 -exec chmod 644 {} \;
+	find $startdir/pkg -name .cvsignore -exec rm {} \;
+
+}

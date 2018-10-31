@@ -1,0 +1,37 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=gwave
+pkgver=20051222
+pkgrel=1
+pkgdesc="Gwave is a waveform viewer. Its purpose is for viewing analog data, such as the output from Spice-like simulations."
+url="http://geda.seul.org/tools/gwave"
+groups=('geda-suite')
+depends=('glibc' 'x11' 'guile-gtk' 'guile' 'glib' 'gtk+' 'readline' 'libtermcap')
+source=(http://geda.seul.org/dist/$pkgname-$pkgver.tar.gz)
+md5sums=('5defce2525247300dcd432ad12bbf173')
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		FAQ		\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

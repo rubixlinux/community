@@ -1,0 +1,58 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=wine
+pkgver=0.9.11
+pkgrel=1
+url="http://www.winehq.org"
+pkgdesc="Wine is an Open Source implementation of the Windows API on top of X and Unix"
+depends=('glibc' 'libXi' 'mesa3d' 'esound' 'openssl' 'zlib' 'lcms' 'alsa-lib' 'libdrm' 'libXau' 'sane' 'libjpeg' 'libxml2' 'audiofile' 'libXdmcp' 'libXmu' 'openldap' 'gphoto2' 'libXt' 'glut' 'libSM' 'libXext' 'libXxf86vm' 'libieee1284' 'libICE' 'libusb' 'cyrus-sasl' 'libxslt' 'libXxf86dga' 'libX11' 'libexif' 'gcc')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('b21d359b75f07255bb5cd34384bdc3cf')
+
+## Todo:
+##   None
+
+## Notes:
+##   Will not build with pie or ssp
+
+## Changelog:
+##   rel1: upgraded to 0.9.11, built without arts 2006.04.12
+##   rel1: upgraded to 0.9.9, built for openldap 2.3 2006.03.10
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export MAKEFLAGS=""
+	export ac_cv_path_ARTSCCONFIG=""
+	export CFLAGS="-march=i486 -mtune=i686 -O2 -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -O2 -Wa,--noexecstack"
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/usr		\
+		--sysconfdir=/etc/wine	\
+		--with-opengl		\
+		--with-x
+	make depend	|| return 1
+	make		|| return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/etc/wine
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a			\
+		ANNOUNCE		\
+		AUTHORS			\
+		COPYING.LIB		\
+		ChangeLog		\
+		DEVELOPERS-HINTS	\
+		LICENSE			\
+		LICENSE.OLD		\
+		README			\
+		VERSION			\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

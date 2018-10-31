@@ -1,0 +1,41 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+pkgname=cabextract
+pkgver=1.1
+pkgrel=1
+pkgdesc="cabextract is Free Software for extracting Microsoft cabinet files, also called .CAB files, on UNIX or UNIX-like systems."
+depends=('glibc')
+source=(http://www.kyz.uklinux.net/downloads/$pkgname-$pkgver.tar.gz)
+md5sums=('f4b729c0be7d288660f4fc167de199a1')
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#rel1: Initial Rubix Release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

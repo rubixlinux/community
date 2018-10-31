@@ -1,0 +1,40 @@
+--- OCSNG_LINUX_AGENT_1.0-RC1/ocsinventory-client.pl.orig	2005-12-22 20:14:35.000000000 -0700
++++ OCSNG_LINUX_AGENT_1.0-RC1/ocsinventory-client.pl	2005-12-22 20:27:38.000000000 -0700
+@@ -146,6 +146,7 @@
+ 	$distro = 'mandrake' if -e "/etc/mandrake-release";
+ 	$distro = 'redhat' if -e "/etc/redhat-release";
+ 	$distro = 'suse' if -e "/etc/SuSE-release";
++	$distro = 'rubix' if -e "/etc/rubix-version";
+ 	
+ 	#Memory informations
+ 	open MEMINFO, "/proc/meminfo";
+@@ -616,6 +617,8 @@
+ 		$packets='deb';
+ 	}elsif($distro=~/mandrake|redhat|suse/){
+ 		$packets='rpm';
++	}elsif($distro=~/rubix/){
++		$packets='rub';
+ 	}
+ 	#DEBIAN case
+ 	if($packets && ($packets eq 'deb')){
+@@ -647,6 +650,20 @@
+ 				$n++;
+ 		}
+ 	}
++
++	#RUB case
++	if($packets && ($packets eq 'rub')){
++		@liste=`pacman -Q`;
++		$n=0;
++		for $ligne(@liste){
++			$ligne=~/^(\S+)\s+(\S+)/;
++			$softwares[$n]{status}='';
++			$softwares[$n]{name}=$1;
++			$softwares[$n]{version}=$2;
++			$softwares[$n]{description}='';
++			$n++;
++		}
++	}
+ 	
+ 	for(0..$#softwares){
+ 		$request{'CONTENT'}{'SOFTWARES'}[$_]{'NAME'} = [ $softwares[$_]{name} ];

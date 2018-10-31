@@ -1,0 +1,43 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=torcs
+pkgver=1.2.4
+pkgrel=1
+pkgdesc="TORCS is a 3D racing cars simulator using OpenGL."
+depends=('glibc' 'openal' 'x11' 'zlib' 'gcc' 'libpng' 'glut')
+url="http://torcs.sourceforge.net"
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('f8727358323bd92537f10167bda4ee5f')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Initial Rubix Release 2005.09.06
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+	make DESTDIR=$startdir/pkg datainstall
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		CHANGELOG.html	\
+		COPYING		\
+		INSTALL.linux	\
+		README*		\
+		TODO.html	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	find $startdir/pkg -perm 777 -exec chmod 755 {} \;
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

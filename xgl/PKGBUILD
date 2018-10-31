@@ -1,0 +1,80 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=xgl
+pkgver=20060319
+pkgrel=1
+pkgdesc="xorg-server-xgl"
+depends=('libXau' 'libXext' 'glibc' 'libXxf86vm' 'mesa3d' 'glitz' 'freetype2' 'libXfont' 'libX11' 'libXdmcp' 'libXrender' 'libfontenc' 'zlib' 'libXrandr' 'libdrm')
+source=(r200-copy-pixels-1.patch		\
+	6.4-dont-install-gles-headers.patch	\
+	change-default-dri-driver-dir.patch	\
+	r300.diff				\
+	mesa-dri-copy-sub-buffer-1.patch	\
+	slang.diff				)
+md5sums=('9a6eaed5ab1fd6748d543679a335f72c' \
+	 'ae36bba4e878c77dc2e823ce00e98869' \
+	 'b39a3d8a0996b85ac5066e74aafc4e95' \
+	 '4c1db88150376753c8fba8f33de76b38' \
+	 '1172019ddea416b546ff932ccedea225' \
+	 'b66a4c664e2358d56e9fa1f85afeeba7' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: initial rubix release
+
+build() {
+
+	export MAKEFLAGS=""
+
+	cd $startdir/src
+
+	cvs -d:pserver:anonymous@cvs.freedesktop.org:/cvs/xorg co -r xgl-0-0-1 xserver
+	cvs -d:pserver:anonymous@cvs.freedesktop.org:/cvs/mesa co Mesa
+
+	cd Mesa
+	patch -p0 < $startdir/src/r200-copy-pixels-1.patch|| return 1
+	patch -p1 < $startdir/src/6.4-dont-install-gles-headers.patch	|| return 1
+	patch -p1 < $startdir/src/change-default-dri-driver-dir.patch	|| return 1
+	patch -p1 < $startdir/src/r300.diff				|| return 1
+	patch -p0 < $startdir/src/mesa-dri-copy-sub-buffer-1.patch	|| return 1
+
+	cd $startdir/src/xserver/xorg
+
+#	patch -p1 < $startdir/src/slang.diff || return 1
+
+	./autogen.sh						\
+		--prefix=/usr/X11R7				\
+		--datadir=/usr/X11R7/lib			\
+		--disable-xprint				\
+		--sysconfdir=/etc/X11				\
+		--localstatedir=/var				\
+		--with-module-dir=/usr/X11R7/lib/modules	\
+		--with-mesa-source=$startdir/src/Mesa		\
+		--enable-glx					\
+		--enable-dri					\
+		--enable-xkb					\
+		--enable-xgl					\
+		--enable-xglx					\
+		--enable-ipv6					\
+		--disable-xorg					\
+		--disable-xprint				\
+		--disable-dmx					\
+		--disable-xvfb					\
+		--disable-xnest
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	rm -r $startdir/pkg/usr/X11R7/lib/xserver
+	rm -r $startdir/pkg/usr/X11R7/lib/pkgconfig
+	rm -r $startdir/pkg/usr/X11R7/lib/X11
+	rm -r $startdir/pkg/usr/X11R7/man
+
+	chown -R root.bin $startdir/pkg/usr/X11R7/bin
+	find $startdir/pkg -name *.la -exec rm {} \;
+
+}

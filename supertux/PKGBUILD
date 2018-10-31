@@ -1,0 +1,35 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+# Contributer: Bill Christiansen <bill.christiansen@gmail.com>
+
+pkgname=supertux
+pkgver=0.1.3
+pkgrel=1
+pkgdesc="SuperTux is a classic 2D jump'n run sidescroller game in a style similar to the original SuperMario games."
+url="http://supertux.berlios.de"
+depends=('glibc' 'sdl' 'libmikmod' 'libjpeg' 'libvorbis' 'x11' 'libogg' 'zlib' 'gcc' 'libpng')
+source=(http://download.berlios.de/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('f2fc288459f33d5cd8f645fbca737a63')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		LEVELDESIGN	\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

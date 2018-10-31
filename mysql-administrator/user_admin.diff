@@ -1,0 +1,8 @@
+--- mysql-administrator-1.1.10/mysql-administrator/source/linux/mysql-administrator.orig	2006-06-12 13:35:21.000000000 -0600
++++ mysql-administrator-1.1.10/mysql-administrator/source/linux/mysql-administrator	2006-06-12 13:35:29.000000000 -0600
+@@ -1,3 +1,5 @@
++export DEBUG_DONT_SPAWN_FETCHES=1
++
+ PRG="$0"
+ 
+ # need this for relative symlinks

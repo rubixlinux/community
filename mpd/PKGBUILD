@@ -1,0 +1,55 @@
+# Maintainer: Jordan Neumeyer <jnengland77@gmail.com>
+
+pkgname=mpd
+pkgver=0.11.5
+pkgrel=2
+pkgdesc="music daemon that plays mp3, flac, and ogg"
+url="http://musicpd.org"
+backup=('etc/mpd.conf')
+depends=('glibc' 'libmikmod' 'flac' 'libao' 'audiofile' 'libvorbis'	\
+	 'faad2' 'libid3tag' 'libmad' 'libogg' 'zlib' 'alsa-lib'	)
+source=(http://mercury.chem.pitt.edu/~shank/$pkgname-$pkgver.tar.gz	\
+	$pkgname							)
+md5sums=('1a9a1a9d31f00a43838b3752024f7ebe' \
+	 '31799240b240e6099e1fc3394a9759f4' )
+
+## Todo:
+##    None
+
+## Notes:
+##    None
+
+## Changelog:
+##    rel1: Initial Release to the /community
+
+
+build() {
+
+	export MAKEFLAGS=""
+
+ 	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr --sysconfdir=/etc
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/etc/rc.d
+	cp $startdir/src/$pkgname-$pkgver/doc/mpdconf.example $startdir/pkg/etc/mpd.conf
+	cp $startdir/src/mpd $startdir/pkg/etc/rc.d
+	chmod 755 $startdir/src/mpd $startdir/pkg/etc/rc.d/mpd
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+	mv $startdir/pkg/usr/share/doc $startdir/pkg/usr
+	rmdir $startdir/pkg/usr/share
+	mv $startdir/pkg/usr/doc/$pkgname $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		INSTALL		\
+		README		\
+		TODO		\
+		ChangeLog	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

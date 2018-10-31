@@ -1,0 +1,17 @@
+--- kiax-0.8.5-src/repath.pl.orig	2005-04-08 08:47:06.000000000 -0600
++++ kiax-0.8.5-src/repath.pl	2006-04-23 13:39:13.000000000 -0600
+@@ -9,6 +9,14 @@
+ my $fnSrcpro = "src/src.pro";
+ my $fnMakefile = "bin/Makefile";
+ my %OSpaths = (
++	rubix => {
++		icons => "/opt/kde",
++		translations => "/opt/kde",
++		binary => "/opt/kde",
++		ICONS_PATH => "/opt/kde",
++		I18N_DIRECTORY => "/opt/kde",
++		DEST_PATH => "/opt/kde"
++	},
+ 	suse => {
+ 		icons => "/opt/kde3",
+ 		translations => "/opt/kde3",

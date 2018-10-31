@@ -1,0 +1,53 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=epsilon
+pkgver=20060124
+pkgrel=1
+pkgdesc="Epsilon is a small, display independent, and quick thumbnailing library."
+depends=('glibc' 'freetype2' 'ecore' 'edje' 'libjpeg' 'eet' 'epeg' 'imlib2' 'evas' 'x11' 'openssl' 'embryo' 'zlib' 'libpng')
+groups=('e17')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to latest cvs 2006.01.24
+##   rel1: upgraded to latest cvs 2005.10.06
+##   rel1: upgraded to latest cvs 2005.08.26
+##   rel1: Initial Rubix Release 2005.04.30
+
+build() {
+
+	cd $startdir/src
+
+	cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment login
+	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment co e17/libs/$pkgname
+
+	cd e17/libs/$pkgname
+
+	./autogen.sh
+	./configure			\
+		--prefix=/usr		\
+		--sysconfdir=/etc/X11	\
+		--enable-static=no	\
+		--enable-xinerama	\
+		$CHOST
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

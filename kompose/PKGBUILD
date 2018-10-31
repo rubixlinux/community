@@ -1,0 +1,47 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=kompose
+pkgver=0.5.3
+pkgrel=1
+pkgdesc="Kompose offers a great new way to manage a big number of windows on different Virtual Desktops. It creates a fullscreen view where every window is represented by a scaled screenshot of its own."
+url="http://kompose.berlios.de"
+depends=('qt' 'glibc' 'freetype2' 'libjpeg' 'libidn' 'imlib2' 'x11' 'fontconfig' 'expat' 'libmng' 'gcc' 'zlib' 'libpng' 'kdelibs' 'libart_lgpl')
+source=(http://download.berlios.de/$pkgname/$pkgname-$pkgver.tar.bz2)
+md5sums=('d0605f3651ed3f2eca9b961266669d30')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: Upgraded to 0.5.3, 0.5.4 would not build 2006.02.26
+##   rel1: Initial Rubix Release
+
+build() {
+
+	export MAKEFLAGS=""
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+}

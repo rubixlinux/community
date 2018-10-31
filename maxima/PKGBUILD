@@ -1,0 +1,42 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=maxima
+pkgver=5.9.2
+pkgrel=1
+pkgdesc="Maxima is a descendant of DOE Macsyma, which had its origins in the late 1960s at MIT. It is the only system based on that effort still publicly available and with an active user community, thanks to its open source nature. Macsyma was the first of a new breed of computer algebra systems, leading the way for programs such as Maple and Mathematica. This particular variant of Macsyma was maintained by William Schelter from 1982 until he passed away in 2001. In 1998 he obtained permission to release the source code under GPL."
+url="http://maxima.sourceforge.net"
+depends=('glibc' 'ncurses' 'readline' 'gnuplot' 'clisp')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.gz)
+md5sums=('dff996cd5c2c0c871977a26e6fb001f3')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to 5.9.2 2005.12.06
+##   rel1: initial rubix release
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure --prefix=/usr
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL*	\
+		NEWS		\
+		README*		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

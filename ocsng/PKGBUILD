@@ -1,0 +1,104 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+REALVER=1.0-RC1
+PDF=1.3
+
+pkgname=ocsng
+pkgver=1.0rc1
+pkgrel=4
+pkgdesc="Open Computer and Software Inventory Next Generation is an application designed to help a network or system administrator keep track of the computer configuration and software installed on the network."
+url="http://ocsinventory.sourceforge.net"
+depends=('glibc' 'mysql' 'perl' 'apache' 'mod_perl' 'perl-xml-simple' 'perl-compress-zlib'	\
+	 'perl-dbd-mysql' 'perl-apache-dbi' 'perl-dbi' 'perl-lwp' 'perl-uri' 'php-zip'		\
+	 'perl-xml-namespacesupport' 'perl-net-ip' 'php' 'samba' 'nmap' 'perl-html-parser'	)
+backup=('etc/ocsinventory-client/ocsinv.conf'	\
+	'etc/ocsinventory-client/ocsinv.adm'	)
+source=(http://dl.sourceforge.net/sourceforge/ocsinventory/OCSNG_LINUX_SERVER_${REALVER}.tar.gz						\
+	http://dl.sourceforge.net/sourceforge/ocsinventory/OCSNG_LINUX_SERVER_PATCH_${REALVER}-1.tar.gz					\
+	http://dl.sourceforge.net/sourceforge/ocsinventory/OCSNG_LINUX_AGENT_${REALVER}.tar.gz						\
+	http://dl.sourceforge.net/sourceforge/ocsinventory/OCSNG_WINDOWS_AGENT_${REALVER}.zip						\
+	http://dl.sourceforge.net/sourceforge/ocsinventory/OCS_Inventory_NG-Installation_and_Administration_Guide_${PDF}_EN.pdf.zip	\
+	cronjob																\
+	logrotate															\
+	ocsinventory-genconf.pl														\
+	rubix.diff															)
+md5sums=('5f3757cd6dadebf9e90d5cd7671a3582' \
+	 '513831077e60b7b38da5382c953ec55c' \
+	 '2381218545de4e546e992b0d2076bebf' \
+	 '3dc91c2358bae44ea43e947c69ed048a' \
+	 '24a691514ca5765a29da59918305ec5b' \
+	 '43839c4ad36370d70d58116149da60c1' \
+	 '4095b9f952604406c36fa025c2579880' \
+	 'cb2d23473c69c7e51ad9fe8d8973b105' \
+	 '93e54c05d46e21138a67a76d230db1a7' )
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel4: added php-zip as a dep 2006.01.20
+##   rel3: initial rubix release
+
+build() {
+
+	cd $startdir/src/OCSNG_LINUX_AGENT_${REALVER}
+
+	patch -p1 < $startdir/src/rubix.diff || return 1
+
+	mkdir -p			$startdir/pkg/etc/ocsinventory-client
+	cp ocsinventory-client.pl	$startdir/pkg/etc/ocsinventory-client
+	cp -a require/*			$startdir/pkg/etc/ocsinventory-client
+	touch				$startdir/pkg/etc/ocsinventory-client/ocsinv.conf
+	touch				$startdir/pkg/etc/ocsinventory-client/ocsinv.adm
+
+	mkdir -p					$startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp $startdir/src/cronjob			$startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp $startdir/src/ocsinventory-genconf.pl	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	mkdir -p $startdir/pkg/usr/sbin
+	ln -s /etc/ocsinventory-client/ocsinventory-client.pl $startdir/pkg/usr/sbin/ocsinv
+
+	mkdir -p			$startdir/pkg/etc/logrotate.d
+	cp $startdir/src/logrotate	$startdir/pkg/etc/logrotate.d/ocsinventory-client
+
+	mkdir -p $startdir/pkg/var/log/ocsinventory-client
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver/agent
+	cp	-a		\
+		README		\
+		changelogs	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver/agent
+
+	cd $startdir/src/OCSNG_LINUX_SERVER_${REALVER}
+	cp $startdir/src/OCSNG_LINUX_SERVER_PATCH_${REALVER}-1/ocsinventory-NG/Ocsinventory.pm ocsinventory-NG
+
+	cp -a ocsreports $startdir/pkg/usr/doc/$pkgname-$pkgver
+	find $startdir/pkg/usr/doc/$pkgname-$pkgver -perm 744 -exec chmod 644 {} \;
+
+	cp -a ocsinventory-NG $startdir/pkg/usr
+	sed -i s:/var/www/ocsinventory-NG:/usr/ocsinventory-NG: $startdir/pkg/usr/ocsinventory-NG/Ocsinventory_startup.pl
+	sed -i s:/var/www/ocsinventory-NG:/usr/ocsinventory-NG: $startdir/pkg/usr/ocsinventory-NG/apache_config
+	mv $startdir/pkg/usr/ocsinventory-NG/apache_config $startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 755 $startdir/pkg/usr/ocsinventory-NG/Ocsinventory_startup.pl
+	mv $startdir/pkg/usr/ocsinventory-NG/Ocsinventory.pm $startdir/pkg/usr/ocsinventory-NG/Ocsinventory.pm.orig
+	fromdos < $startdir/pkg/usr/ocsinventory-NG/Ocsinventory.pm.orig > $startdir/pkg/usr/ocsinventory-NG/Ocsinventory.pm
+	rm $startdir/pkg/usr/ocsinventory-NG/Ocsinventory.pm.orig
+	chmod 755 $startdir/pkg/usr/ocsinventory-NG/Ocsinventory.pm
+
+	cp ipdiscover-util/ipdiscover-util.pl $startdir/pkg/usr/doc/$pkgname-$pkgver/ocsreports
+
+	mkdir -p		$startdir/pkg/var/log/ocsinventory-NG
+	chown root.nobody	$startdir/pkg/var/log/ocsinventory-NG
+	chmod 770		$startdir/pkg/var/log/ocsinventory-NG
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver/windows_agent
+	cp $startdir/src/OCSNG_WINDOWS_AGENT_${REALVER}/* $startdir/pkg/usr/doc/$pkgname-$pkgver/windows_agent
+	cp $startdir/src/OCS_Inventory_NG-Installation_and_Administration_Guide_${PDF}_EN.pdf $startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*.pdf
+
+	chown -R root.bin $startdir/pkg/usr/sbin
+
+}

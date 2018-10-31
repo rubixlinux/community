@@ -1,0 +1,65 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=entrance
+pkgver=20060124
+pkgrel=1
+pkgdesc="Entrance is the next generation of Elogin, a login/display manager for Linux XFree86 systems. It is designed to be extremely customizable and aesthetically attractive -- a refreshing relief from the traditional dull and boring interfaces of XDM and its descendants."
+depends=('glibc' 'freetype2' 'ecore' 'edje' 'libjpeg' 'eet' 'imlib2' 'evas' 'x11' 'openssl' 'embryo' 'zlib' 'libtool' 'esmart')
+groups=('e17')
+source=(config.diff)
+md5sums=('a1b506afe273c59c5f27f5d6f7158dfd')
+
+## Todo:
+##   None
+
+## Notes:
+##   None
+
+## Changelog:
+##   rel1: upgraded to latest cvs 2006.01.24
+##   rel1: upgraded to latest cvs, fixed sessions 2005.10.07
+##   rel1: upgraded to latest cvs 2005.10.06
+##   rel1: upgraded to latest cvs 2005.08.26
+##   rel1: Initial Rubix Release 2005.04.30
+
+build() {
+
+
+	cd $startdir/src
+
+	cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment login
+	cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/enlightenment co e17/apps/$pkgname
+
+	cd e17/apps/$pkgname
+
+	patch -p1 < $startdir/src/config.diff || return 1
+
+	./autogen.sh
+	./configure			\
+		--prefix=/usr		\
+		--sysconfdir=/etc/X11	\
+		--enable-static=no	\
+		--enable-xinerama	\
+		$CHOST
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		README.edje	\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+	chown -R root.bin $startdir/pkg/usr/sbin
+
+	rm -r $startdir/pkg/etc/X11/init.d
+	rm -r $startdir/pkg/etc/X11/pam.d
+
+}

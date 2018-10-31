@@ -1,0 +1,58 @@
+# Maintainer: Anders Kraneled <anders@kraneled.dk>
+
+pkgname=kmuddy
+pkgver=0.7.1
+pkgrel=1
+pkgdesc="Kmuddy is a KDE Multi User Dungeon (MUD) client. It features aliases, colours, compression and lots more."
+source=(http://www.kmuddy.net/files/$pkgname-$pkgver.tar.gz)
+md5sums=('54146de43c0462b60c1328ab348c7789')
+depends=('kdelibs')
+url="http://www.kmuddy.net"
+
+#Todo:
+#None
+
+#Notes:
+#This is build without MXP (Mud eXtension Protocol)
+
+#Changelog:
+#rel1: Initial release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe -Wa,--noexecstack"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--with-xinerama		\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	chown -R root.bin $startdir/pkg/opt/kde/bin
+
+	cp	-a		\
+		AUTHORS		\
+		TODO		\
+		CHANGELOG	\
+		DESIGN		\
+		LICENSE		\
+		README		\
+		README.MIDI	\
+		Scripting-HOWTO	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	chmod 644 $startdir/pkg/opt/kde/share/kmuddy/*
+
+}

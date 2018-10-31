@@ -1,0 +1,50 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=wxgtk
+pkgver=2.6.2
+pkgrel=1
+pkgdesc="wxgtk is open source C++ GUI framework to make cross-platform programming child's play."
+url="http://www.wxwindows.org"
+depends=('sdl' 'glibc' 'libtiff' 'gtk+2' 'atk' 'fontconfig' 'x11' 'expat' 'zlib' 'freetype2' 'pango' 'libjpeg' 'cairo' 'glib2' 'gcc' 'libpng')
+source=(http://dl.sourceforge.net/sourceforge/wxwindows/wxGTK-$pkgver.tar.bz2)
+md5sums=('ba2afe7bd028062c5fff6d5ef3249c67')
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+
+	cd $startdir/src/wxGTK-$pkgver
+	./configure			\
+		--prefix=/usr		\
+		--with-png		\
+		--with-jpeg		\
+		--with-tiff		\
+		--with-opengl		\
+		--without-gnomeprint	\
+		--with-sdl		\
+		--with-gtk=2		\
+		--enable-joystick	\
+		--enable-opengl		\
+		--enable-unicode
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		CHANGES-GTK.txt	\
+		CHANGES.txt	\
+		COPYING.LIB	\
+		INSTALL.txt	\
+		LICENCE.txt	\
+		README-GTK.txt	\
+		README.txt	\
+		TODO.txt	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+	chmod 644 $startdir/pkg/usr/doc/$pkgname-$pkgver/*
+
+	ln -sf /usr/lib/wx/config/gtk2-unicode-release-2.6 $startdir/pkg/usr/bin/wx-config
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

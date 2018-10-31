@@ -1,0 +1,27 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+pkgname=aircrack
+pkgver=2.4
+pkgrel=1
+pkgdesc="Aircrack is an 802.11 WEP cracking program that can recover a 40-bit or 104-bit WEP key once enough encrypted packets have been gathered. It implements the standard FMS attack along with some optimizations, thus making the attack much faster compared to other WEP cracking tools."
+url="http://www.cr0.net:8040/code/network"
+depends=('glibc')
+source=(http://www.packetstormsecurity.org/wireless/$pkgname-$pkgver.tgz)
+md5sums=('fbe301341cbae60d410ee0431a3adae4')
+
+build() {
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	make || return 1
+	make prefix=/usr DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		ChangeLog	\
+		README.txt	\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.bin $startdir/pkg/usr/bin
+
+}

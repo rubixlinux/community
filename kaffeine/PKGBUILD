@@ -1,0 +1,75 @@
+# Maintainer: Joshua Rubin <joshua@rubixlinux.org>
+
+PLUG=0.2
+
+pkgname=kaffeine
+pkgver=0.8.1
+pkgrel=1
+pkgdesc="Kaffeine is a full featured Multimedia-Player for KDE. By default it uses xine as backend."
+depends=('glibc' 'mesa3d' 'libXtst' 'fontconfig' 'expat' 'libXrender' 'zlib' 'libXau' 'acl' 'libjpeg' 'libidn' 'libXpm' 'libvorbis' 'libXdmcp' 'libXmu' 'xine-lib' 'libmng' 'libXt' 'libXft' 'libXinerama' 'libpng' 'libXext' 'libSM' 'lame' 'attr' 'libXaw' 'libICE' 'libogg' 'libart_lgpl' 'qt' 'freetype2' 'cdparanoia' 'libXfixes' 'libXcursor' 'libX11' 'pcre' 'gcc' 'kdelibs' 'libXrandr')
+source=(http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-$pkgver.tar.bz2		\
+	http://dl.sourceforge.net/sourceforge/$pkgname/$pkgname-mozilla-$PLUG.tar.bz2	)
+md5sums=('3abba4ff76ffdd109e1f1cfe286e5b5b' \
+	 'c7bb24cbd20fdfeffbb0da452533cac4' )
+
+## Todo:
+##   None
+
+## Notes:
+##   Does not build with pie
+##   To install the mozilla plugin, copy /usr/share/kaffeine-mozilla-ver/* to your mozilla plugin dir
+
+## Changelog:
+##   rel1: upgraded to 0.8.1 200.05.08
+##   rel1: upgraded to 0.8 2006.03.27
+##   rel1: upgraded to 0.7.1 2005.10.31
+##   rel1: upgraded to 0.7 2005.08.27
+##   rel1: Initial Rubix Release 2005.05.20
+
+build() {
+
+	export MAKEFLAGS=""
+	export CFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+	export CXXFLAGS="-march=i486 -mtune=i686 -Os -pipe -fstack-protector-all -Wa,--noexecstack"
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+        make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README*		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	cd $startdir/src/$pkgname-mozilla-$PLUG
+	./configure
+	make || return 1
+
+	cd src/.libs
+	mkdir -p $startdir/pkg/usr/lib/mozilla/plugins
+	cp	-a			\
+		kaffeineplugin.so	\
+	$startdir/pkg/usr/lib/mozilla/plugins
+	cd ../..
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-mozilla-$PLUG
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		README		\
+	$startdir/pkg/usr/doc/$pkgname-mozilla-$PLUG
+
+}

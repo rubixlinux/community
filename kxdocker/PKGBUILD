@@ -1,0 +1,64 @@
+# Maintainer: Joshua Rubin <joshua@rubix-os.org>
+
+RES=0.11
+
+pkgname=kxdocker
+pkgver=0.33
+pkgrel=1
+pkgdesc="KXDocker is an innovative docker for KDE -- it's like Mac OS X's Dock, but more powerful. KXDocker is a very big project; the goal is greater usability for the Linux operating system through desktop integration. KXDocker is not just an \"old school\" docker!"
+depends=('kdelibs' 'qt')
+url="http://www.xiaprojects.com/www/prodotti/kxdocker/main.php"
+source=(http://www.xiaprojects.com/www/downloads/files/$pkgname/$pkgname-resources-$RES.tar.bz2	\
+	http://www.xiaprojects.com/www/downloads/files/$pkgname/$pkgname-$pkgver.tar.bz2	)
+md5sums=('f6e8185a0c3c94b3237012921a85e694' \
+	 'eb2d23b808a670867e6761a7fb6e186a' )
+
+#Todo:
+#None
+
+#Notes:
+#None
+
+#Changelog:
+#rel1: Initial Rubix Release
+
+build() {
+
+	export CFLAGS="-march=i486 -mtune=i686 -pipe"
+	export CXXFLAGS="-march=i486 -mtune=i686 -pipe"
+
+	export QTDIR=/usr/lib/qt
+
+	cd $startdir/src/$pkgname-resources-$RES
+
+	./configure
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	cd $startdir/src/$pkgname-$pkgver
+
+	./configure			\
+		--prefix=/opt/kde	\
+		--disable-debug		\
+		--program-prefix=""	\
+		--program-suffix=""	\
+		$CHOST
+	make || return 1
+	make DESTDIR=$startdir/pkg install
+
+	mkdir -p $startdir/pkg/usr/doc/$pkgname-$pkgver
+	cp	-a		\
+		AUTHORS		\
+		COPYING		\
+		ChangeLog	\
+		INSTALL		\
+		NEWS		\
+		README		\
+		TODO		\
+	$startdir/pkg/usr/doc/$pkgname-$pkgver
+
+	chown -R root.root $startdir/pkg
+	find $startdir/pkg -perm 664 -exec chmod 644 {} \;
+	find $startdir/pkg -perm 775 -exec chmod 755 {} \;
+
+}
